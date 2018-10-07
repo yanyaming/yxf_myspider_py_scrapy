@@ -27,10 +27,12 @@ ROBOTSTXT_OBEY = True
 # Configure a delay for requests for the same website (default: 0)
 # See https://doc.scrapy.org/en/latest/topics/settings.html#download-delay
 # See also autothrottle settings and docs
-DOWNLOAD_DELAY = 3
+#对同一网站的请求时延
+#DOWNLOAD_DELAY = 3
 # The download delay setting will honor only one of:
+#最高并发请求
 #CONCURRENT_REQUESTS_PER_DOMAIN = 16
-CONCURRENT_REQUESTS_PER_IP = 16
+#CONCURRENT_REQUESTS_PER_IP = 16
 
 # Disable cookies (enabled by default)
 #COOKIES_ENABLED = False
@@ -46,15 +48,18 @@ CONCURRENT_REQUESTS_PER_IP = 16
 
 # Enable or disable spider middlewares
 # See https://doc.scrapy.org/en/latest/topics/spider-middleware.html
-#SPIDER_MIDDLEWARES = {
-#    'myspider.middlewares.MyspiderSpiderMiddleware': 543,
-#}
+SPIDER_MIDDLEWARES = {
+    'myspider.middlewares.MyspiderSpiderMiddleware': 543,
+}
 
 # Enable or disable downloader middlewares
 # See https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
-#DOWNLOADER_MIDDLEWARES = {
-#    'myspider.middlewares.MyspiderDownloaderMiddleware': 543,
-#}
+DOWNLOADER_MIDDLEWARES = {
+    "tc_zufang.Proxy_Middleware.ProxyMiddleware":100,
+    'tc_zufang.rotate_useragent_dowmloadmiddleware.RotateUserAgentMiddleware':400,
+    'tc_zufang.redirect_middleware.Redirect_Middleware':500,
+    'myspider.middlewares.MyspiderDownloaderMiddleware': 543,
+}
 
 # Enable or disable extensions
 # See https://doc.scrapy.org/en/latest/topics/extensions.html
@@ -70,10 +75,13 @@ ITEM_PIPELINES = {
 
 # Enable and configure the AutoThrottle extension (disabled by default)
 # See https://doc.scrapy.org/en/latest/topics/autothrottle.html
+#自动流量控制
 AUTOTHROTTLE_ENABLED = True
 # The initial download delay
+#自动流量控制的启动延时
 AUTOTHROTTLE_START_DELAY = 5
 # The maximum download delay to be set in case of high latencies
+#最大延迟
 #AUTOTHROTTLE_MAX_DELAY = 60
 # The average number of requests Scrapy should be sending in parallel to
 # each remote server
@@ -88,3 +96,9 @@ AUTOTHROTTLE_START_DELAY = 5
 #HTTPCACHE_DIR = 'httpcache'
 #HTTPCACHE_IGNORE_HTTP_CODES = []
 #HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
+
+#配置调度器
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+SCHEDULER_PERSIST = True
+SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.SpiderPriorityQueue'

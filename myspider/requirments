@@ -1,0 +1,6 @@
+scrapy==1.5.1
+requests
+selenium
+bs4
+lxml
+

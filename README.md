@@ -13,9 +13,11 @@ yxf_spider_py_scrapy : 爬虫服务项目
 
 git根目录：yxf_myspider_py_scrapy  
 
-网站项目根目录：yxf_myspider_py_scrapy/myspider（后面以./myspider表示）  
+爬虫项目根目录：yxf_myspider_py_scrapy/myspider（后面以./myspider表示）  
 
-与网站内容无关的环境配置脚本：yxf_myspider_py_scrapy/scripts  
+与爬虫内容无关的环境配置脚本：yxf_myspider_py_scrapy/scripts  
+
+部署docker容器相关：yxf_myspider_py_scrapy/docker  
 
 ### 项目依赖  
 
@@ -25,38 +27,77 @@ pip>=18.x
 
 mongodb  
 
-scrapy=1.5.x  
+./myspider/requirments  
 
 ### 项目架构
 
-管理服务器-VPS（）：docker-master
+管理服务器-VPS：docker-master  
 
-数据库服务器-VPS（提供大量非关系数据存储服务）：mongodb  
+数据存储服务器-VPS：mongodb  
 
-工作服务器-本地（）：scrapy，redis  
+队列存储服务器-分布式：redis  
+
+工作服务器-本地：scrapy  
 
 #### Scrapy项目开发  
 
 1.初始化工程:  
 
 	进入想要放置scrapy项目的路径：
-	scrapy startproject myspider——新建一个主项目作为一个完整的爬虫框架
-	目录内容：
-	myspider.cfg——项目整体配置
-	myspider/——项目代码
-	    __init__.py
-	    items.py——数据存储模型
-	    middlewares.py——下载器中间件（可配置代理和会话）和爬虫中间件
-	    pipelines.py——数据处理行为
-	    settings.py——爬虫配置文件
-	    spiders/——具体爬虫代码
-	        __init__.py
-	        ...(添加各种爬虫规则)
+	scrapy startproject myspider——新建一个主项目，会自动生成多个文件
 
-2.随着爬取网站的不同逐渐添加新子爬虫:  
+2.出于分布式和爬取多种网站架构的目的，手动将./myspider/myspider目录内修改为新的组织形式（略去init文件）:  
 
-	进入项目路径：
-	scrapy genspider spidername domainname——新建一个子爬虫（把spidername添加到spider中）
+	settings.py——爬虫配置文件
+	settings_cfg.py——敏感信息配置文件（克隆代码使用时需手动创建）
+	redis.py——队列存储管理
+	mongodb.py——数据存储管理
+	abstract_items.py——数据存储模型抽象类
+	abstract_pipelines.py——数据处理行为抽象类
+	abstract_middlewares/——中间件抽象类
+	    abstract_agent.py——模拟浏览器行为
+	    abstract_selenium.py——模拟浏览器
+	    abstract_proxy.py——网络代理
+	    abstract_session.py——会话&Cookie维护
+	    abstract_exception.py——异常处理
+	    abstract_login.py——破解登录
+	    abstract_capcha.py——破解验证码
+	    ...
+	abstract_downloader/——下载器抽象类（实际上下载器及其中间件才是重点和难点）
+	    abstract_listpage_downloader.py
+	    abstract_detailpage_downloader.py
+	    abstract_ajaxlistpage_downloader.py
+	    ...
+	abstract_spiders/——爬虫抽象类
+	    abstract_listpage_spider.py
+	    abstract_detailpage_spider.py
+	    ...
+	domain1/——对应不同网站对象的爬虫实现代码
+	    master_downloader.py
+	    slaver_downloader.py
+	    master_spider.py
+	    slaver_spider.py
+	    middleware/
+	        agent.py
+	        proxy.py
+	        ...
+	    items.py
+	    pipelines.py
+	    ...
+
+	├── abstract_items.py
+	├── abstract_middlewares
+	│   └── middlewares.py
+	├── abstract_pipelines.py
+	├── abstract_spiders
+	│   ├── a51job.py
+	│   ├── anjuke.py
+	│   └── __init__.py
+	├── __init__.py
+	├── settings_cfg.py
+	└── settings.py
+
+
 
 ------------
 
