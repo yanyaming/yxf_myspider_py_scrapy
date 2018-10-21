@@ -1,6 +1,7 @@
 scrapy==1.5.1
+redis
+scrapy-redis
+pymongo
 requests
-selenium
 bs4
 lxml
-

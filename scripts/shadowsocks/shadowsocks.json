@@ -1,7 +1,0 @@
-{
-    "server":"[publicIP]",
-    "server_port":50003,
-    "password":"[pwd]",
-    "method":"rc4-md5",
-    "timeout":600
-}

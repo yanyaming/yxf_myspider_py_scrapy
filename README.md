@@ -7,7 +7,7 @@ yxf_spider_py_scrapy : 爬虫服务项目
 
 项目主题：通用爬虫服务框架  
 
-开发环境：Linux（CentOS 7），python，scrapy，mongodb  
+开发环境：Linux（CentOS 7），python，scrapy，mongodb, redis, docker  
 
 编程语言：python  
 
@@ -27,7 +27,7 @@ pip>=18.x
 
 mongodb  
 
-./myspider/requirments  
+yxf_myspider_py_scrapy/requirments  
 
 ### 项目架构
 
@@ -49,7 +49,7 @@ mongodb
 2.出于分布式和爬取多种网站架构的目的，手动将./myspider/myspider目录内修改为新的组织形式（略去init文件）:  
 
 	settings.py——爬虫配置文件
-	settings_cfg.py——敏感信息配置文件（克隆代码使用时需手动创建）
+	settings.cfg——敏感信息配置文件（克隆代码使用时需手动创建）
 	redis.py——队列存储管理
 	mongodb.py——数据存储管理
 	abstract_items.py——数据存储模型抽象类
