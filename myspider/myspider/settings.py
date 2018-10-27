@@ -1,149 +1,205 @@
 # -*- coding: utf-8 -*-
-
-# Scrapy settings for myspider project
-#
-# For simplicity, this file contains only settings considered important or
-# commonly used. You can find more settings consulting the documentation:
-#
-#     https://doc.scrapy.org/en/latest/topics/settings.html
-#     https://doc.scrapy.org/en/latest/topics/downloader-middleware.html
-#     https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 import ConfigParser
 cf = ConfigParser.ConfigParser()
 cf.read("settings.cfg")
 
 #项目名称
 BOT_NAME = 'myspider'
-
 #项目模块
 SPIDER_MODULES = ['myspider.spiders']
 NEWSPIDER_MODULE = 'myspider.spiders'
+#代码模板路径，使用startproject命令创建新项目时使用
+#TEMPLATES_DIR='templates'
 
-#-----------------下载器配置--------------------
+#-----------------速率配置--------------------
 
-#固定浏览器UA
-#USER_AGENT = 'myspider (+http://www.yourdomain.com)'
+#自动限速（是约数，不是确数，还需后面硬性规定）
+#AUTOTHROTTLE_ENABLED = True
+#AUTOTHROTTLE_START_DELAY = 5
+#AUTOTHROTTLE_MAX_DELAY = 30
+#对同一网站的并发请求
+#AUTOTHROTTLE_TARGET_CONCURRENCY = 1
 
-#服从robots.txt协议
-ROBOTSTXT_OBEY = True
-
-#抓取网站的最大允许的抓取深度值
-DEPTH_LIMIT=0
-
-#scrapy downloader并发请求最大值
-#CONCURRENT_REQUESTS = 32
-
-#对同一网站的请求时延
-#DOWNLOAD_DELAY = 3
+#最大并发数据项目
+#CONCURRENT_ITEMS=100
+#最大并发请求
+#CONCURRENT_REQUESTS = 16
+#对同一网站的最大并发请求（使用代理可并发，非代理一定不能并发）
+CONCURRENT_REQUESTS_PER_DOMAIN = 5
 
 #等待响应时延
-DOWNLOAD_TIMEOUT=10
+DOWNLOAD_TIMEOUT=10#180
+#对同一网站的请求间隔
+DOWNLOAD_DELAY = 0.25#0
+#随机请求间隔（DOWNLOAD_DELAY*0.5~1.5）
+RANDOMIZE_DOWNLOAD_DELAY=True
 
-#DNS域名缓存
-DNSCACHE_ENABLED=True
+#请求超时失败或返回特定响应码的重试
+RETRY_ENABLED=False#True
+#最多重试次数
+#RETRY_TIMES=2
+#RETRY_HTTP_CODES=[500, 502, 503, 504, 408]
+#调整优先级
+#RETRY_PRIORITY_ADJUST=-1
 
-#最高并发请求值（两个配置二选一）
-#CONCURRENT_REQUESTS_PER_DOMAIN = 16
-#CONCURRENT_REQUESTS_PER_IP = 16
+#重定向
+#REDIRECT_ENABLED=True
 
-#禁用cookie
-#COOKIES_ENABLED = False
-
-#禁用Telnet Console
-#TELNETCONSOLE_ENABLED = False
+#-----------------功能配置--------------------
 
 #自定义请求头
-#DEFAULT_REQUEST_HEADERS = {
-#   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-#   'Accept-Language': 'en',
-#}
+DEFAULT_REQUEST_HEADERS = {
+    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
+    'Accept-Language': 'zh-CN,zh;q=0.9',#'en',
+    'Accept-Encoding': 'gzip, deflate, br',
+    'Connection':'keep-alive',
+    'Upgrade-Insecure-Requests': '1',
+}
+
+#robots.txt协议
+ROBOTSTXT_OBEY = False
+
+#抓取网站的最大允许的抓取深度值（0值不限制）
+#DEPTH_LIMIT=0
+#抓取优先级调整（正值广度优先遍历，负值深度优先遍历）
+#DEPTH_PRIORITY=0
+#收集最大深度信息
+#DEPTH_STATS=True
+#每个请求都添加深度信息
+#DEPTH_STATS_VERBOSE=False
+
+#在请求中加入来源地址
+#REFERER_ENABLED=True
+
+#日志级别
+#LOG_LEVEL='DEBUG'
+#把所有标准输出重定向到日志
+#LOG_STDOUT=False
+#配置日志存储目录
+#LOG_FILE = "logs/scrapy.log"
+
+#内存监控
+#MEMUSAGE_ENABLED=True
+#最大警告内存（比MEMUSAGE_LIMIT_MB小，超出则发送警告邮件，再超出则自动杀死进程）
+#MEMUSAGE_WARNING_MB=0
+#内存超限邮件通知
+#MEMUSAGE_NOTIFY_MAIL=False#e.g.['user@example.com']
+#限制最大内存，超出则自动关闭爬虫
+#MEMUSAGE_LIMIT_MB=0
+
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"
+DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
+SCHEDULER_PERSIST = True
+SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'
 
 #-----------------中间件等组件配置-------------------------
 
 #spider中间件
-# See https://doc.scrapy.org/en/latest/topics/spider-middleware.html
 SPIDER_MIDDLEWARES = {
-    # 'myspider.middlewares.MyspiderSpiderMiddleware': 543,
+    #BASE
+    #过滤掉不成功的请求（最好关闭，反爬措施会采取httpcode欺骗）
+    'scrapy.spidermiddlewares.httperror.HttpErrorMiddleware': None,#50,禁用
+    #过滤掉对其他域名的请求
+    'scrapy.spidermiddlewares.offsite.OffsiteMiddleware': 500,
+    #在下次的请求中添加请求头信息：referer引用来源
+    'scrapy.spidermiddlewares.referer.RefererMiddleware': 700,
+    #过滤url超过限制长度的请求
+    'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware': 800,
+    #设置爬取深度信息以及深度限制
+    'scrapy.spidermiddlewares.depth.DepthMiddleware': 900,
 }
 
 #downloader中间件
 DOWNLOADER_MIDDLEWARES = {
-    "tc_zufang.Proxy_Middleware.ProxyMiddleware":100,
-    'tc_zufang.rotate_useragent_dowmloadmiddleware.RotateUserAgentMiddleware':400,
-    'tc_zufang.redirect_middleware.Redirect_Middleware':500,
-    # 'myspider.middlewares.MyspiderDownloaderMiddleware': 543,
-}
+    #BASE
+    #robots.txt协议,不爬取Disallow规定禁止爬取的URL
+    'scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware': 100,
+    #http基本身份认证,http://user:pass@domain.com,把用户名密码加密后的数据放入请求头
+    'scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware': 300,
+    #载入settings里的超时配置项
+    'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': None,#350,禁用
+    #载入settings里的默认请求头
+    'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': 400,
+    #载入settings里的默认UA
+    'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,#500,重写
+    #请求失败重试
+    'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,#550,禁用
+    #爬取ajax,框架会自动爬取形如http://example.com/!#foo=bar的AJAX页面
+    #此中间件在原网址中添加#!,用于爬取没有!#的AJAX页面
+    'scrapy.downloadermiddlewares.ajaxcrawl.AjaxCrawlMiddleware': 560,
+    #处理head重定向
+    'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware': 580,
+    #处理压缩传输
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 590,
+    #处理body重定向
+    'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': 600,
+    #Cookie,CookieJar:对每个域名、每个爬虫单独设置（需要在每个爬虫代码里显式传递）
+    'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700,
+    #网络代理,在Request对象的meta信息中加入代理信息，通过代理访问,http_proxy/https_proxy
+    'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,#750,重写
+    #状态信息
+    'scrapy.downloadermiddlewares.stats.DownloaderStats': 850,
+    #HTTP缓存
+    'scrapy.downloadermiddlewares.httpcache.HttpCacheMiddleware': None,#900,禁用
 
-#extensions附加组件
-#EXTENSIONS = {
-#    'scrapy.extensions.telnet.TelnetConsole': None,
-#}
+    #CUSTOM
+    'myspider.middlewares.headers.DynamicHeaderMiddleware': 500,
+    'myspider.middlewares.exceptions.RequestFailMiddleware': 550,
+    'myspider.middlewares.proxy.ProxyMiddleware': 750,
+}
 
 #pipelines管道
 ITEM_PIPELINES = {
-    'myspider.pipelines.MyspiderPipeline': 300,
+    #REDIS
+    'scrapy_redis.pipelines.RedisPipeline': 300,
+
+    #CUSTOM
+    #捕获url内容的item送入全局URL队列，其他项目管道在每个爬虫中单独设置
+    # 'myspider.pipelines.UrlPipeline': 100,
 }
-
-#--------------------爬虫框架配置------------------
-
-#自动限速
-AUTOTHROTTLE_ENABLED = True
-AUTOTHROTTLE_START_DELAY = 5
-#AUTOTHROTTLE_MAX_DELAY = 60
-#AUTOTHROTTLE_TARGET_CONCURRENCY = 1.0
-#AUTOTHROTTLE_DEBUG = False
-
-#HTTP缓存
-#HTTPCACHE_ENABLED = True
-#HTTPCACHE_EXPIRATION_SECS = 0
-#HTTPCACHE_DIR = 'httpcache'
-#HTTPCACHE_IGNORE_HTTP_CODES = []
-#HTTPCACHE_STORAGE = 'scrapy.extensions.httpcache.FilesystemCacheStorage'
-
-#调度器
-SCHEDULER = "scrapy_redis.scheduler.Scheduler"
-DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
-SCHEDULER_PERSIST = True
-SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.SpiderPriorityQueue'
-
-#配置日志存储目录
-LOG_FILE = "logs/scrapy.log"
 
 #-------------------外部配置----------------------
 
-Master_Server = {
-    'url':cf.get('server','masterhost'),
-}
-
+MASTER_HOST = cf.get('server','masterhost')
 MASTER = cf.getboolean('server','master')
 
+#REDIS_URL恰好也是scrapy-redis的默认设置名称，不需要自己在代码中手动连接
+#MONGODB_URL不是，需要自己为每个爬虫的项目管道手动连接
 if MASTER is True:
-    QUEUE_DB = {
-        'ENGINE': cf.get('queuedb-master','engine'),
-        'DB': cf.get('queuedb-master','db'),
-        'HOST': cf.get('queuedb-master','host'),
-        'PORT': cf.get('queuedb-master','port'),
+    REDIS_URL = cf.get('redis-master','url')
+    REDIS = {
+        'host':cf.get('redis-master','host'),
+        'port':cf.get('redis-master','port'),
+        'password':cf.get('redis-master','password'),
+        'db':cf.get('redis-master','db'),
     }
+    MONGODB_URL = cf.get('mongodb-master','url')
 else:
-    QUEUE_DB = {
-        'URL': cf.get('queuedb-slaver','url')
+    REDIS_URL = cf.get('redis-slaver','url')
+    REDIS = {
+        'host':cf.get('redis-slaver','host'),
+        'port':cf.get('redis-slaver','port'),
+        'password':cf.get('redis-slaver','password'),
+        'db':cf.get('redis-slaver','db'),
     }
+    MONGODB_URL = cf.get('mongodb-slaver','url')
 
-NOSQL_DB = {
-    'ENGINE': cf.get('nosqldb','engine'),
-    'DB': cf.get('nosqldb','db'),
-    'USER': cf.get('nosqldb','user'),
-    'PASSWORD': cf.get('nosqldb','password'),
-    'HOST': cf.get('nosqldb','host'),
-    'PORT': cf.get('nosqldb','port'),
-}
-
-IP_Proxy_API = {
+#可直接使用
+PROXY_API = {
     'url':cf.get('proxyapi','url'),
-    'orderid':cf.get('proxyapi','orderid'),
-    'args':cf.get('proxyapi','args'),
+    'tid':cf.get('proxyapi','tid'),
 }
 
-IP_Proxy_Page = {
-    'url':cf.get('proxypage','url'),
+#需要自己搭建维护IP池的服务
+PROXY_SERVER = {
+    'url':cf.get('proxyserver','url'),
+}
+
+EMAIL = {
+    'SMTPserver':cf.get("email","SMTPserver"),
+    'port':cf.getint("email","port"),
+    'address':cf.get("email","address"),
+    'password':cf.get("email","password"),
+    'from':cf.get("email","from"),
+    'to':cf.get("email","to"),
 }

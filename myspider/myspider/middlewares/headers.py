@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 import random
-from scrapy.contrib.downloadermiddleware.useragent import UserAgentMiddleware
 
-class RotateUserAgentMiddleware(UserAgentMiddleware):
+
+class DynamicHeaderMiddleware(object):
     user_agent_list = [\
         'Mozilla/5.0 (X11; Linux i686) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.43 Safari/537.31',\
         'Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.17 (KHTML, like Gecko) Chrome/24.0.1312.60 Safari/537.17',\
@@ -29,17 +29,10 @@ class RotateUserAgentMiddleware(UserAgentMiddleware):
         'Mozilla/5.0 (X11; U; Linux i686; en-US; rv:1.8.1.12) Gecko/20080219 Firefox/2.0.0.12 Navigator/9.0.0.6',\
     ] #三种系统平台x多种浏览器平台
 
-    def __init__(self, user_agent=''):
-        self.user_agent = user_agent
-
-    def _user_agent(self, spider):
-        if hasattr(spider, 'user_agent'): #若爬虫已经指定UA则使用爬虫的
-            return spider.user_agent
-        elif self.user_agent: #若中间件指定UA则使用指定
-            return self.user_agent
-        return random.choice(self.user_agent_list) #若爬虫未指定且中间件未指定则随机选择一个
-
     def process_request(self, request, spider):
-        ua = self._user_agent(spider)
-        if ua:
-            request.headers.setdefault('User-Agent', ua)
+        ua = random.choice(self.user_agent_list)
+        request.headers.setdefault('User-Agent', ua)
+
+        host = request.url.split('://')[1].split('/')[0]
+        request.headers.setdefault('Host',host)
+        return None

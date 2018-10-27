@@ -9,7 +9,6 @@ from __future__ import print_function
 
 import scrapy
 
-#item定义每一条数据的所有字段映射到数据库，字段数据类型自动根据实际数据确定
 
 class MyspiderItem(scrapy.Item):
     name = scrapy.Field()
