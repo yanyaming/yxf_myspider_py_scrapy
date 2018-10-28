@@ -87,14 +87,6 @@ yxf_myspider_py_scrapy/requirments.txt
 	    pipelines.py
 	    ...
 
-	├── abstract_items.py
-	├── abstract_middlewares
-	│   └── middlewares.py
-	├── abstract_pipelines.py
-	├── abstract_spiders
-	│   ├── a51job.py
-	│   ├── anjuke.py
-	│   └── __init__.py
 	├── __init__.py
 	├── settings_cfg.py
 	└── settings.py
