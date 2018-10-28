@@ -1,9 +1,7 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import logging
 import traceback
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 from scrapy.exceptions import DropItem
 
 #requirments

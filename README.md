@@ -7,9 +7,11 @@ yxf_spider_py_scrapy : 爬虫服务项目
 
 项目主题：通用爬虫服务框架  
 
-开发环境：Linux（CentOS 7），python，scrapy，mongodb, redis, docker  
+开发环境：Linux（CentOS 7），python，scrapy，mongodb, redis  
 
 编程语言：python  
+
+IDE：Pycharm  
 
 git根目录：yxf_myspider_py_scrapy  
 
@@ -21,21 +23,21 @@ git根目录：yxf_myspider_py_scrapy
 
 ### 项目依赖  
 
-python==2.7.x  
+python==3.6.x  
 
 pip>=18.x  
 
 mongodb  
 
-yxf_myspider_py_scrapy/requirments  
+yxf_myspider_py_scrapy/requirments.txt  
 
 ### 项目架构
 
-管理服务器-VPS：docker-master  
+管理服务器-VPS：scrapyd-master  
 
 数据存储服务器-VPS：mongodb  
 
-队列存储服务器-分布式：redis  
+队列存储服务器-VPS：redis  
 
 工作服务器-本地：scrapy  
 
@@ -44,7 +46,7 @@ yxf_myspider_py_scrapy/requirments
 1.初始化工程:  
 
 	进入想要放置scrapy项目的路径：
-	scrapy startproject myspider——新建一个主项目，会自动生成多个文件
+	/usr/local/python3/bin/scrapy startproject myspider——新建一个主项目，会自动生成多个文件
 
 2.出于分布式和爬取多种网站架构的目的，手动将./myspider/myspider目录内修改为新的组织形式（略去init文件）:  
 
@@ -103,25 +105,9 @@ yxf_myspider_py_scrapy/requirments
 
 ## 部署
 
-使用Docker打包：./docker_image  
+Master——scrapyd爬虫服务，redis队列，mongodb数据库，django爬虫网站API服务  
 
-Master-Daemon1——管理爬虫服务器  
-Master-Daemon2——维护urls队列  
-Master-Daemon3——数据库同步管理  
-
-Slaver-requestWork（每台机器5个线程，维护Session&Cookie，请求网页数据）  
-——中间件：代理ip池，模拟登录，验证码识别，反反爬虫策略，异常处理  
-
-Slaver-parserWork（每台机器5个线程，解析目标数据，获取url列表，存入数据库）  
-——中间件：数据模型  
-
-Slaver-dataWork（mongodb非关系数据库服务器）  
-
-### 分布式部署
-
-服务器主机Master——管理Docker：Vultr-VPS（ip，ssh，ftp，root），docker，建立实例，作为服务运行  
-
-本地电脑Slaver：任意Linux系统，安装，任意时刻手动运行  
+Slaver——从master获取爬虫任务，解析得到结果后上传到master的数据库  
 
 ------------
 

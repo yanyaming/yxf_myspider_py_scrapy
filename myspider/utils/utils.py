@@ -1,6 +1,5 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals  # 使用py3的字符串表示法，不加u前缀也用unicode
-from __future__ import print_function # 使用py3的print()函数
 import os
 import random
 import smtplib # python自带的邮件库

@@ -1,9 +1,5 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-from __future__ import print_function
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 from scrapy_redis.spiders import RedisSpider
 import scrapy
 from myspider.pipelines.FangchanItem import AnjukeZufangItem,AnjukeXinfangItem,AnjukeErshoufangItem
@@ -59,7 +55,7 @@ class AnjukeZufangSpider(RedisSpider):
             #附近地铁
             item.fujinditie = str(response.css('.zu-itemmod .zu-info').xpath('//*p[2]/span[3]/text()').extract_first())
             #url:详情页
-            url_detailpage=response_selector.css('.zu-itemmod div::attr(link)').extract_first()
+            url_detailpage=response.css('.zu-itemmod div::attr(link)').extract_first()
             print('----------------------'+str(item))
             yield scrapy.Request(url=url_detailpage,callback=self.parsedetail)
             yield item

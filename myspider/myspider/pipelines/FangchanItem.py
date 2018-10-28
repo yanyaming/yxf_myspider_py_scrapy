@@ -1,9 +1,5 @@
+#!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from __future__ import unicode_literals
-from __future__ import print_function
-import sys
-reload(sys)
-sys.setdefaultencoding('utf-8')
 import scrapy
 
 #除了图片，其他一律存储为字符串
