@@ -10,7 +10,7 @@ class AnjukeZufangItem(scrapy.Item):
     bianma = scrapy.Field()
     #标题
     biaoti = scrapy.Field()
-    #图片（图片）
+    #图片（文件）
     tupian = scrapy.Field()
     #费用
     feiyong = scrapy.Field()
@@ -51,8 +51,37 @@ class AnjukeZufangItem(scrapy.Item):
     #小区问答（长文本）
     xiaoquwenda = scrapy.Field()
 
+    #info
+    crawl_time = scrapy.Field()
+    crawl_update_time = scrapy.Field()
+
+    def insert_sql(cls):
+        insert_sql = '''
+            insert into
+            AnjukeZufang({})
+            values()
+            ;
+        '''
+
+        params = [
+
+        ]
+        return insert_sql,params
+
 class AnjukeXinfangItem(scrapy.Item):
     pass
 
 class AnjukeErshoufangItem(scrapy.Item):
+    pass
+
+class FangtianxiaZufangItem(scrapy.Item):
+    pass
+
+class FangtianxiaXinfangItem(scrapy.Item):
+    pass
+
+class FangtianxiaErshoufangfangItem(scrapy.Item):
+    pass
+
+class WubatongchengZufangItem(scrapy.Item):
     pass

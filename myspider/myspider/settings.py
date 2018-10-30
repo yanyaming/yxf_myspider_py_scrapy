@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import ConfigParser
-cf = ConfigParser.ConfigParser()
-cf.read("settings.cfg")
+import os
+import configparser
+cf = configparser.ConfigParser()
+cf.read(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"settings.cfg"))
 
 #项目名称
 BOT_NAME = 'myspider'
@@ -26,12 +27,12 @@ NEWSPIDER_MODULE = 'myspider.spiders'
 #最大并发请求
 #CONCURRENT_REQUESTS = 16
 #对同一网站的最大并发请求（使用代理可并发，非代理一定不能并发）
-CONCURRENT_REQUESTS_PER_DOMAIN = 5
+CONCURRENT_REQUESTS_PER_DOMAIN = 1
 
 #等待响应时延
-DOWNLOAD_TIMEOUT=10#180
+DOWNLOAD_TIMEOUT=5#180
 #对同一网站的请求间隔
-DOWNLOAD_DELAY = 0.25#0
+DOWNLOAD_DELAY = 2#0
 #随机请求间隔（DOWNLOAD_DELAY*0.5~1.5）
 RANDOMIZE_DOWNLOAD_DELAY=True
 
@@ -44,16 +45,17 @@ RETRY_ENABLED=False#True
 #RETRY_PRIORITY_ADJUST=-1
 
 #重定向
-#REDIRECT_ENABLED=True
+REDIRECT_ENABLED=False#True
 
 #-----------------功能配置--------------------
 
 #自定义请求头
 DEFAULT_REQUEST_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
-    'Accept-Language': 'zh-CN,zh;q=0.9',#'en',
+    'Accept-Language': 'zh-CN,zh;q=0.9',#'en-US,en;q=0.5',
     'Accept-Encoding': 'gzip, deflate, br',
-    'Connection':'keep-alive',
+    'Connection': 'keep-alive',
+    'Cache-Control': 'max-age=0',
     'Upgrade-Insecure-Requests': '1',
 }
 
@@ -88,10 +90,11 @@ ROBOTSTXT_OBEY = False
 #限制最大内存，超出则自动关闭爬虫
 #MEMUSAGE_LIMIT_MB=0
 
+#redis
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"
 DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
-SCHEDULER_PERSIST = True
 SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'
+SCHEDULER_PERSIST = True
 
 #-----------------中间件等组件配置-------------------------
 
@@ -129,11 +132,11 @@ DOWNLOADER_MIDDLEWARES = {
     #此中间件在原网址中添加#!,用于爬取没有!#的AJAX页面
     'scrapy.downloadermiddlewares.ajaxcrawl.AjaxCrawlMiddleware': 560,
     #处理head重定向
-    'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware': 580,
+    'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware': None,#580,
     #处理压缩传输
     'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 590,
     #处理body重定向
-    'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': 600,
+    'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': None,#600,
     #Cookie,CookieJar:对每个域名、每个爬虫单独设置（需要在每个爬虫代码里显式传递）
     'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700,
     #网络代理,在Request对象的meta信息中加入代理信息，通过代理访问,http_proxy/https_proxy
@@ -145,8 +148,8 @@ DOWNLOADER_MIDDLEWARES = {
 
     #CUSTOM
     'myspider.middlewares.headers.DynamicHeaderMiddleware': 500,
+    'myspider.middlewares.proxy.ProxyMiddleware': 510,#添加此中间件不一定使用代理，是否使用代理需要在每个爬虫里自己设置
     'myspider.middlewares.exceptions.RequestFailMiddleware': 550,
-    'myspider.middlewares.proxy.ProxyMiddleware': 750,
 }
 
 #pipelines管道
@@ -155,8 +158,7 @@ ITEM_PIPELINES = {
     'scrapy_redis.pipelines.RedisPipeline': 300,
 
     #CUSTOM
-    #捕获url内容的item送入全局URL队列，其他项目管道在每个爬虫中单独设置
-    # 'myspider.pipelines.UrlPipeline': 100,
+    'myspider.pipelines.common.SavePipeline': 900,
 }
 
 #-------------------外部配置----------------------
@@ -164,8 +166,7 @@ ITEM_PIPELINES = {
 MASTER_HOST = cf.get('server','masterhost')
 MASTER = cf.getboolean('server','master')
 
-#REDIS_URL恰好也是scrapy-redis的默认设置名称，不需要自己在代码中手动连接
-#MONGODB_URL不是，需要自己为每个爬虫的项目管道手动连接
+#REDIS_URL恰好也是scrapy-redis的默认设置名称，爬虫启动后自动连接
 if MASTER is True:
     REDIS_URL = cf.get('redis-master','url')
     REDIS = {
@@ -174,7 +175,14 @@ if MASTER is True:
         'password':cf.get('redis-master','password'),
         'db':cf.get('redis-master','db'),
     }
-    MONGODB_URL = cf.get('mongodb-master','url')
+    DATABASE = {
+        'host': cf.get('db-master', 'host'),
+        'port': cf.get('db-master', 'port'),
+        'user': cf.get('db-master', 'user'),
+        'password': cf.get('db-master', 'password'),
+        'db': cf.get('db-master', 'db'),
+    }
+    DATABASE_URL = cf.get('db-master','url')
 else:
     REDIS_URL = cf.get('redis-slaver','url')
     REDIS = {
@@ -183,15 +191,20 @@ else:
         'password':cf.get('redis-slaver','password'),
         'db':cf.get('redis-slaver','db'),
     }
-    MONGODB_URL = cf.get('mongodb-slaver','url')
+    DATABASE = {
+        'host': cf.get('db-slaver', 'host'),
+        'port': cf.get('db-slaver', 'port'),
+        'user': cf.get('db-slaver', 'user'),
+        'password': cf.get('db-slaver', 'password'),
+        'db': cf.get('db-slaver', 'db'),
+    }
+    DATABASE_URL = cf.get('db-slaver','url')
 
-#可直接使用
 PROXY_API = {
     'url':cf.get('proxyapi','url'),
     'tid':cf.get('proxyapi','tid'),
 }
 
-#需要自己搭建维护IP池的服务
 PROXY_SERVER = {
     'url':cf.get('proxyserver','url'),
 }

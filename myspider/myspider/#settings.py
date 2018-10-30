@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import ConfigParser
-cf = ConfigParser.ConfigParser()
-cf.read("settings.cfg")
+import os
+import configparser
+cf = configparser.ConfigParser()
+cf.read(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"settings.cfg"))
 
 #项目名称
 BOT_NAME = 'myspider'
@@ -291,23 +292,3 @@ NEWSPIDER_MODULE = 'myspider.spiders'
 
 #-------------------外部配置----------------------
 
-# MASTER_HOST = cf.get('server','masterhost')
-# MASTER = cf.getboolean('server','master')
-
-# #REDIS_URL恰好也是scrapy-redis的默认设置名称，不需要自己在代码中手动连接
-# #MONGODB_URL不是，需要自己为每个爬虫的项目管道手动连接
-# if MASTER is True:
-#     REDIS_URL = cf.get('redis-master','url')
-#     MONGODB_URL = cf.get('mongodb-master','url')
-# else:
-#     REDIS_URL = cf.get('redis-slaver','url')
-#     MONGODB_URL = cf.get('mongodb-slaver','url')
-
-# IP_Proxy_API = {
-#     'url':cf.get('proxyapi','url'),
-#     'orderid':cf.get('proxyapi','orderid'),
-# }
-
-# IP_Proxy_Page = {
-#     'url':cf.get('proxypage','url'),
-# }

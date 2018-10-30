@@ -7,7 +7,7 @@ yxf_spider_py_scrapy : 爬虫服务项目
 
 项目主题：通用爬虫服务框架  
 
-开发环境：Linux（CentOS 7），python，scrapy，mongodb, redis  
+开发环境：Linux（CentOS 7），python，scrapy，redis，postgresql   
 
 编程语言：python  
 
@@ -17,17 +17,13 @@ git根目录：yxf_myspider_py_scrapy
 
 爬虫项目根目录：yxf_myspider_py_scrapy/myspider（后面以./myspider表示）  
 
-与爬虫内容无关的环境配置脚本：yxf_myspider_py_scrapy/scripts  
-
-部署docker容器相关：yxf_myspider_py_scrapy/docker  
-
 ### 项目依赖  
 
 python==3.6.x  
 
 pip>=18.x  
 
-mongodb  
+postgresql  
 
 yxf_myspider_py_scrapy/requirments.txt  
 
@@ -35,7 +31,7 @@ yxf_myspider_py_scrapy/requirments.txt
 
 管理服务器-VPS：scrapyd-master  
 
-数据存储服务器-VPS：mongodb  
+数据存储服务器-VPS：postgresql  
 
 队列存储服务器-VPS：redis  
 
@@ -104,3 +100,4 @@ Slaver——从master获取爬虫任务，解析得到结果后上传到master�
 ------------
 
 ## 运行
+

@@ -1,0 +1,17 @@
+scrapy==1.5.1
+scrapyd
+scrapyd-client
+psycopg2
+redis
+scrapy-redis
+requests
+bs4
+lxml
+selenium
+
+chardet>=2.3.0
+gevent>=1.2.0
+greenlet>=0.4.11
+SQLAlchemy>=1.1.4
+web.py==0.40.dev0
+psutil
