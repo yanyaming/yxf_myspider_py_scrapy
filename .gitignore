@@ -1,9 +1,10 @@
+#middlefile
 *.pyc
 __pycache__
 *.log
 *.db
 *.pid
+*.egg
 
+#sensitive config
 myspider/settings.cfg
-myspider/scrapyd/*
-myspider/logs/*
