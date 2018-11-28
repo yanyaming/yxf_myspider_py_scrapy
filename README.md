@@ -15,7 +15,7 @@ IDE：Pycharm
 
 git根目录：yxf_myspider_py_scrapy  
 
-爬虫项目根目录：yxf_myspider_py_scrapy/myspider（后面以./myspider表示）  
+爬虫根目录：yxf_myspider_py_scrapy/myspider（后面以./myspider表示）  
 
 ### 项目依赖  
 
@@ -29,13 +29,17 @@ yxf_myspider_py_scrapy/requirments.txt
 
 ### 项目架构
 
-管理服务器-VPS：scrapyd-master  
+管理服务器-VPS：scrapyd  
 
 数据存储服务器-VPS：postgresql  
 
 队列存储服务器-VPS：redis  
 
-工作服务器-本地：scrapy  
+代理IP服务器-VPS：IPProxyPool  
+
+工作服务器-本地：scrapy(myspider)  
+
+数据查询API服务器-VPS：webserver  
 
 #### Scrapy项目开发  
 
@@ -93,7 +97,7 @@ yxf_myspider_py_scrapy/requirments.txt
 
 ## 部署
 
-Master——scrapyd爬虫服务，redis队列，mongodb数据库，django爬虫网站API服务  
+Master——scrapyd爬虫服务，redis队列，postgresql数据库，web.py网站API服务  
 
 Slaver——从master获取爬虫任务，解析得到结果后上传到master的数据库  
 

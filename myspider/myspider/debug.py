@@ -7,6 +7,10 @@ import redis
 sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from myspider.settings import REDIS_URL,REDIS
 
+'''
+自己添加的文件，用于测试。爬虫是大批量异步运行的程序，bug很难跟踪，写好测试代码非常重要
+'''
+
 if __name__ == '__main__':
     r = redis.Redis(host=REDIS['host'], password=REDIS['password'])
 

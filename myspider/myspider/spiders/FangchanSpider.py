@@ -66,7 +66,7 @@ class AnjukeZufangSpider(RedisSpider):
         # url_nextpage=response.css('.aNxt::attr(href)').extract_first()
         # yield scrapy.Request(url=url_nextpage)
 
-    # callback可在一个爬虫里递进深入爬取
+    # callback回调链可在一个爬虫里递进深入爬取
     def parsedetail(self, response):
         item = AnjukeZufangItem()
         #编码

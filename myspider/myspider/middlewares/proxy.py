@@ -7,6 +7,10 @@ import requests
 from myspider.settings import REDIS_URL,REDIS,PROXY_API,PROXY_SERVER
 
 '''
+1.从第三方API或本地IP池提取一批代理IP供爬虫使用，存储于redis。
+2.每次请求都会从redis随机获取代理IP，并对此IP的使用次数、失败次数进行计数。
+3.根据计数结果决定后续的请求是否换IP以及是否从redis中删除失败次数多的IP，当redis中的代理被删除殆尽时再重新提取一批。
+
 redis常用操作：
 连接——r=Redis(URL)
 通用——新建r['name']，判断是否存在r.exists(name)，删除r.delete(name)
@@ -18,6 +22,7 @@ redis常用操作：
 redis_pool = redis.ConnectionPool(host=REDIS['host'], port=int(REDIS['port']), db=int(REDIS['db']),password=REDIS['password'])
 
 #每次请求都从redis随机查询出一个代理IP，若有效代理过少则通过API更新代理数据，为每个爬虫单独维护代理池
+#代理IP必须使用高匿，http/https视情况而定
 def getRandomProxy(from_where,protocol,proxy_http,proxy_https):
     r = redis.StrictRedis(connection_pool=redis_pool)
     lenth1 = r.llen(proxy_http)
@@ -28,8 +33,14 @@ def getRandomProxy(from_where,protocol,proxy_http,proxy_https):
     if lenth1 <= 1 or lenth2 <= 1:
         res1=''
         res2=''
-        #返回ip:port形式的纯文本列表，\n换行
+        #从第三方API提取：返回ip:port形式的纯文本列表，\n换行
         if from_where == 'api':
+            '''
+            参数:      参数可选输入:
+            category   0 匿名,2 高匿
+            protocol   (不输入默认http),https
+            area       数据原文是完整地区名，可输入国家/省份/城市，API提供者进行模糊查询
+            '''
             url = PROXY_API['url']+'?tid='+PROXY_API['tid']
             res1 = requests.get(url + '&category=2&num=20&protocol=http')
             time.sleep(1)
@@ -38,12 +49,19 @@ def getRandomProxy(from_where,protocol,proxy_http,proxy_https):
                 r.lpush(proxy_http, prefix_http + i)
             for i in res2.text.split('\r\n'):
                 r.lpush(proxy_https, prefix_https + i)
-        #返回列表，列表内有三项，只取前两项ip和端口
+        #从本地IP池提取：返回列表，列表内有三项，只取前两项ip和端口
         elif from_where == 'server':
+            '''
+            参数:       参数可选输入:
+            types	    0 高匿,1 匿名,2 透明
+            protocol	0 http,1 https,2 http/https
+            country     国内,国外
+            area	    数据原文是完整地区名，可输入国家/省份/城市，API提供者进行模糊查询
+            '''
             url = PROXY_SERVER['url']+'?'
-            res1 = requests.get(url + '&count=20&protocol=0')
+            res1 = requests.get(url + '&count=20&types=0&protocol=0')
             time.sleep(1)
-            res2 = requests.get(url + '&count=20&protocol=2')
+            res2 = requests.get(url + '&count=20&types=0&protocol=2')
             for i in eval(res1.text):
                 r.lpush(proxy_http,prefix_http+i[0]+':'+str(i[1]))
             for i in eval(res2.text):

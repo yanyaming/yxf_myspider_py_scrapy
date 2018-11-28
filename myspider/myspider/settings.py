@@ -5,15 +5,15 @@ import configparser
 cf = configparser.ConfigParser()
 cf.read(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"settings.cfg"))
 
-#项目名称
+# 项目名称
 BOT_NAME = 'myspider'
-#项目模块
+# 项目模块
 SPIDER_MODULES = ['myspider.spiders']
 NEWSPIDER_MODULE = 'myspider.spiders'
-#代码模板路径，使用startproject命令创建新项目时使用
-#TEMPLATES_DIR='templates'
+# 代码模板路径，使用startproject命令创建新项目时使用
+# TEMPLATES_DIR='templates'
 
-#-----------------速率配置--------------------
+# -----------------速率配置--------------------
 
 #自动限速（是约数，不是确数，还需后面硬性规定）
 #AUTOTHROTTLE_ENABLED = True
@@ -47,7 +47,7 @@ RETRY_ENABLED=False#True
 #重定向
 REDIRECT_ENABLED=False#True
 
-#-----------------功能配置--------------------
+# -----------------功能配置--------------------
 
 #自定义请求头
 DEFAULT_REQUEST_HEADERS = {
@@ -96,9 +96,9 @@ DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
 SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'
 SCHEDULER_PERSIST = True
 
-#-----------------中间件等组件配置-------------------------
+# -----------------中间件等组件配置-------------------------
 
-#spider中间件
+# spider中间件
 SPIDER_MIDDLEWARES = {
     #BASE
     #过滤掉不成功的请求（最好关闭，反爬措施会采取httpcode欺骗）
@@ -113,7 +113,7 @@ SPIDER_MIDDLEWARES = {
     'scrapy.spidermiddlewares.depth.DepthMiddleware': 900,
 }
 
-#downloader中间件
+# downloader中间件
 DOWNLOADER_MIDDLEWARES = {
     #BASE
     #robots.txt协议,不爬取Disallow规定禁止爬取的URL
@@ -152,7 +152,7 @@ DOWNLOADER_MIDDLEWARES = {
     'myspider.middlewares.exceptions.RequestFailMiddleware': 550,
 }
 
-#pipelines管道
+# pipelines管道
 ITEM_PIPELINES = {
     #REDIS
     'scrapy_redis.pipelines.RedisPipeline': 300,
@@ -161,12 +161,12 @@ ITEM_PIPELINES = {
     'myspider.pipelines.common.SavePipeline': 900,
 }
 
-#-------------------外部配置----------------------
+# -------------------外部配置----------------------
 
-MASTER_HOST = cf.get('server','masterhost')
-MASTER = cf.getboolean('server','master')
+MASTER_HOST = cf.get('meta','masterhost')
+MASTER = cf.getboolean('meta','master')
 
-#REDIS_URL恰好也是scrapy-redis的默认设置名称，爬虫启动后自动连接
+# REDIS_URL恰好也是scrapy-redis的默认设置名称，爬虫启动后自动连接
 if MASTER is True:
     REDIS_URL = cf.get('redis-master','url')
     REDIS = {

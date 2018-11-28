@@ -7,6 +7,7 @@ import psycopg2
 import psycopg2.pool
 from myspider.settings import DATABASE,DATABASE_URL
 
+
 class DefaultItemLoader(ItemLoader):
     default_output_processor=TakeFirst()
 
@@ -15,6 +16,7 @@ class DefaultItemLoader(ItemLoader):
 
 # def postgresConn(pool_max=1,pool_min=1):
 #     return #conn obj
+
 
 class SavePipeline(object):
     def __init__(self):

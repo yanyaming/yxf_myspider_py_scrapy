@@ -11,33 +11,39 @@ SCRAPY_ROOT = os.path.join(os.path.dirname(WEB_ROOT),'myspider')
 from webserver.getdata import SqlQuery
 
 
+'''
+本服务将作为爬虫网站（独立域名）的默认网站服务（8080），提供网站首页和数据API接口
+'''
+
 urls = (
-    '/', 'select',
-    '/delete', 'delete',
-    '/login', 'login',
-    '/logout', 'logout',
+    '/', 'index',
+    '/api/all', 'All',
+    '/api/topic', 'Topic',
 )
 
 
-def start_api_server():
-    sys.argv.append('0.0.0.0:%s' % config.API_PORT)
-    app = web.application(urls, globals())
-    app.run()
-
-
-class select(object):
+class index(object):
     def GET(self):
         inputs = web.input()  # query:?type=1&name=admin;storage:{'type': u'1', 'name': u'admin'}
         json_result = json.dumps(sqlhelper.select(inputs.get('count', None), inputs))
         return json_result
 
 
-class delete(object):
+class All(object):
     params = {}
 
     def GET(self):
-        inputs = web.input()
-        json_result = json.dumps(sqlhelper.delete(inputs))
+        inputs = web.input()  # query:?type=1&name=admin;storage:{'type': u'1', 'name': u'admin'}
+        json_result = json.dumps(sqlhelper.select(inputs.get('count', None), inputs))
+        return json_result
+
+
+class Topic(object):
+    params = {}
+
+    def GET(self):
+        inputs = web.input()  # query:?type=1&name=admin;storage:{'type': u'1', 'name': u'admin'}
+        json_result = json.dumps(sqlhelper.select(inputs.get('count', None), inputs))
         return json_result
 
 

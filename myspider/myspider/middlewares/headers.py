@@ -2,6 +2,10 @@
 # -*- coding: utf-8 -*-
 import random
 
+'''
+随机更换请求的UA，并不是每次都换，每隔10次请求才换一次
+'''
+
 
 class DynamicHeaderMiddleware(object):
     user_agent_list = [

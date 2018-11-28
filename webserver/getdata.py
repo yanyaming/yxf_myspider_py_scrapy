@@ -6,6 +6,10 @@ import configparser
 import psycopg2
 import psycopg2.pool
 
+'''
+本代码由主服务调用，对爬虫数据库进行查询并返回数据
+'''
+
 WEB_ROOT = os.path.dirname(os.path.abspath(__file__))
 SCRAPYD_ROOT = os.path.join(os.path.dirname(WEB_ROOT),'scrapyd')
 SCRAPY_ROOT = os.path.join(os.path.dirname(WEB_ROOT),'myspider')

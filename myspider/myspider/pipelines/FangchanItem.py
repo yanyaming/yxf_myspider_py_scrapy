@@ -2,6 +2,12 @@
 # -*- coding: utf-8 -*-
 import scrapy
 
+'''
+1.建立数据对象模型，一个class对象里的所有类变量即数据表的一条记录
+2.在class中记录静态解析规则
+'''
+
+
 #除了图片，其他一律存储为字符串
 class AnjukeZufangItem(scrapy.Item):
 
