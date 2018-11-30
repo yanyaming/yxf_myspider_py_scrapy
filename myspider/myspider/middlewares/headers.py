@@ -53,6 +53,8 @@ class DynamicHeaderMiddleware(object):
                 request.headers['User-Agent']=ua
             elif request.meta['proxy_used_times']==spider.settings.get('PROXY_MAX_USE',10):
                 request.headers['User-Agent']=ua
+            else:
+                pass
         else:
             request.headers['User-Agent']=ua
 

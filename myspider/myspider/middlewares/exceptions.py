@@ -28,12 +28,13 @@ def send_email():
 
 class RequestFailMiddleware(object):
 
-    # spider流程出错
+    # spider流程出错（spider编程错误）
     def process_spider_exception(self, response, exception, spider):
         response.request.meta['proxy_failed_times'] += 1
         spider.logger.info('----------spider GET failed')
         # raise exception
-        return response.request.replace(dont_filter=True)
+        # return response.request.replace(dont_filter=True)
+        raise exception
 
     # downloader流程出错（因超时而未得到响应等）
     def process_exception(self, request, exception, spider):

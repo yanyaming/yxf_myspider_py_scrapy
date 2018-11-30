@@ -1,17 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from scrapy.exceptions import DropItem
+from myspider.pipelines.FangchanItem import *
 
 
-class  AnjukeZufangPipeline(object):
-    def __init__(self):
-        pass
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls()
-
-    def process_item(self, item, spider):
-        #process
-        #数据去重，数据规范化
-        return item
+# class fangchan_pipeline(object):
+#     def open_spider(self, spider):
+#         self.session = DBSession()
+#
+#     def process_item(self, item, spider):
+#         self.session.add(item)
+#         self.session.commit()
+#
+#     def close_spider(self, spider):
+#         self.session.close()

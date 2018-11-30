@@ -1,32 +1,27 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-from scrapy.exceptions import DropItem
-from scrapy.loader.processors import MapCompose,TakeFirst  #添加继续处理函数,选取第一个元素
-from scrapy.loader import ItemLoader  #预定义网页选取规则
-import psycopg2
-import psycopg2.pool
+import scrapy
+from sqlalchemy import Column, create_engine
+from sqlalchemy import String, Integer  # 数据字段类型
+from sqlalchemy.orm import sessionmaker
+from sqlalchemy.ext.declarative import declarative_base
 from myspider.settings import DATABASE,DATABASE_URL
 
 
-class DefaultItemLoader(ItemLoader):
-    default_output_processor=TakeFirst()
-
-    def __init__(self,item,response):
-        super(DefaultItemLoader,self).__init__(item=item,response=response)
-
-# def postgresConn(pool_max=1,pool_min=1):
-#     return #conn obj
+Base = declarative_base()
+# 初始化数据库连接:
+engine = create_engine(DATABASE_URL)
+# 创建DBSession类型:
+DBSession = sessionmaker(bind=engine)
 
 
 class SavePipeline(object):
-    def __init__(self):
-        # self.db = psycopg2.connect()
-        pass
-
-    @classmethod
-    def from_crawler(cls, crawler):
-        return cls()
+    def open_spider(self, spider):
+        self.session = DBSession()
 
     def process_item(self, item, spider):
-        # self.db[spider.name].update(item.bianma,dict(item),upsert=True)
-        raise DropItem("save to db ok: %s" % item)
+        self.session.add(item)
+        self.session.commit()
+
+    def close_spider(self, spider):
+        self.session.close()

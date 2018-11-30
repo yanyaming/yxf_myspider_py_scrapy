@@ -49,7 +49,7 @@ REDIRECT_ENABLED=False#True
 
 # -----------------功能配置--------------------
 
-#自定义请求头
+#预定义请求头
 DEFAULT_REQUEST_HEADERS = {
     'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,*/*;q=0.8',
     'Accept-Language': 'zh-CN,zh;q=0.9',#'en-US,en;q=0.5',
@@ -117,19 +117,18 @@ SPIDER_MIDDLEWARES = {
 DOWNLOADER_MIDDLEWARES = {
     #BASE
     #robots.txt协议,不爬取Disallow规定禁止爬取的URL
-    'scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware': 100,
+    'scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware': None,#100,禁用
     #http基本身份认证,http://user:pass@domain.com,把用户名密码加密后的数据放入请求头
     'scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware': 300,
     #载入settings里的超时配置项
     'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': None,#350,禁用
-    #载入settings里的默认请求头
+    #载入settings里的预定义请求头
     'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': 400,
     #载入settings里的默认UA
     'scrapy.downloadermiddlewares.useragent.UserAgentMiddleware': None,#500,重写
     #请求失败重试
     'scrapy.downloadermiddlewares.retry.RetryMiddleware': None,#550,禁用
-    #爬取ajax,框架会自动爬取形如http://example.com/!#foo=bar的AJAX页面
-    #此中间件在原网址中添加#!,用于爬取没有!#的AJAX页面
+    #爬取ajax,在原网址中添加#!,用于爬取没有!#的AJAX页面
     'scrapy.downloadermiddlewares.ajaxcrawl.AjaxCrawlMiddleware': 560,
     #处理head重定向
     'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware': None,#580,
@@ -147,9 +146,9 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.httpcache.HttpCacheMiddleware': None,#900,禁用
 
     #CUSTOM
-    'myspider.middlewares.headers.DynamicHeaderMiddleware': 500,
-    'myspider.middlewares.proxy.ProxyMiddleware': 510,#添加此中间件不一定使用代理，是否使用代理需要在每个爬虫里自己设置
-    'myspider.middlewares.exceptions.RequestFailMiddleware': 550,
+    'myspider.middlewares.headers.DynamicHeaderMiddleware': 500,#动态UA
+    'myspider.middlewares.proxy.ProxyMiddleware': 510,#添加此中间件不一定使用代理，是否使用代理在每个爬虫里自己设置
+    'myspider.middlewares.exceptions.RequestFailMiddleware': 550,#异常处理
 }
 
 # pipelines管道
@@ -158,7 +157,7 @@ ITEM_PIPELINES = {
     'scrapy_redis.pipelines.RedisPipeline': 300,
 
     #CUSTOM
-    'myspider.pipelines.common.SavePipeline': 900,
+    'myspider.pipelines.CommonPipeline.SavePipeline': 900,
 }
 
 # -------------------外部配置----------------------
