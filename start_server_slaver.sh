@@ -11,12 +11,6 @@ cd ./IPProxyPool
 nohup python3 IPProxy.py > ipproxypool.log 2>&1 &
 cd ..
 
-#scrapyd
-cd ./scrapyd
-nohup python3 /usr/local/python3/bin/scrapyd > scrapyd.log 2>&1 &
-cd ..
-
 echo "server is running in background(slaver)"
 echo "ipproxypool:port=8001(local)"
-echo "scrapyd:port=6800(local)"
 exit 0

@@ -71,7 +71,7 @@ DBSession = sessionmaker(bind=engine)
 #     #info
 #     crawl_time = scrapy.Field()
 #     crawl_update_time = scrapy.Field()
-    
+
 
 class fangchan_anjuke_zufang_item(Base, scrapy.Item):
     __tablename__ = "fangchan_anjuke_zufang"

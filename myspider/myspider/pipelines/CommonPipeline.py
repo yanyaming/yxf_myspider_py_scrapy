@@ -16,6 +16,9 @@ DBSession = sessionmaker(bind=engine)
 
 
 class SavePipeline(object):
+    def __init__(self):
+        self.session = None
+
     def open_spider(self, spider):
         self.session = DBSession()
 

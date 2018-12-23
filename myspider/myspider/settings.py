@@ -60,7 +60,7 @@ DEFAULT_REQUEST_HEADERS = {
 }
 
 #robots.txt协议
-ROBOTSTXT_OBEY = False
+ROBOTSTXT_OBEY = False#True,此处不遵守robots协议
 
 #抓取网站的最大允许的抓取深度值（0值不限制）
 #DEPTH_LIMIT=0
@@ -131,11 +131,11 @@ DOWNLOADER_MIDDLEWARES = {
     #爬取ajax,在原网址中添加#!,用于爬取没有!#的AJAX页面
     'scrapy.downloadermiddlewares.ajaxcrawl.AjaxCrawlMiddleware': 560,
     #处理head重定向
-    'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware': None,#580,
+    'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware': None,#580,禁用
     #处理压缩传输
     'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 590,
     #处理body重定向
-    'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': None,#600,
+    'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': None,#600,禁用
     #Cookie,CookieJar:对每个域名、每个爬虫单独设置（需要在每个爬虫代码里显式传递）
     'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700,
     #网络代理,在Request对象的meta信息中加入代理信息，通过代理访问,http_proxy/https_proxy
@@ -153,7 +153,8 @@ DOWNLOADER_MIDDLEWARES = {
 
 # pipelines管道
 ITEM_PIPELINES = {
-    #REDIS
+    #BASE
+    #REDIS任务队列管理相关
     'scrapy_redis.pipelines.RedisPipeline': 300,
 
     #CUSTOM
@@ -166,7 +167,7 @@ MASTER_HOST = cf.get('meta','masterhost')
 MASTER = cf.getboolean('meta','master')
 
 # REDIS_URL恰好也是scrapy-redis的默认设置名称，爬虫启动后自动连接
-if MASTER is True:
+if MASTER:
     REDIS_URL = cf.get('redis-master','url')
     REDIS = {
         'host':cf.get('redis-master','host'),
