@@ -5,22 +5,24 @@ from scrapy.exceptions import DropItem
 
 class  MyspiderPipeline(object):
     def __init__(self):
-        #__init__
         self.ids_seen = set()
 
     @classmethod
     def from_crawler(cls, crawler):
-        # scrapy风格的实例化入口，功能类似__init__，在__init__之前执行，会自动生成crowler和settings属性
+        # scrapy风格的实例化入口，功能类似__init__，在__init__之前执行，会自动生成crawler和settings属性
         return cls()
 
+    #1
     def open_spider(self, spider):
         # 爬虫启动时的动作
         self.file = open('items.json', 'w')
 
+    #2
     def close_spider(self, spider):
         # 爬虫关闭时的动作
         self.file.close()
 
+    #3
     def process_item(self, item, spider):
         # 处理项目
         #

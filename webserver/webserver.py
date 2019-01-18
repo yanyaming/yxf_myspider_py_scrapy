@@ -8,7 +8,7 @@ WEB_ROOT = os.path.dirname(os.path.abspath(__file__))
 sys.path.append(WEB_ROOT)
 SCRAPYD_ROOT = os.path.join(os.path.dirname(WEB_ROOT),'scrapyd')
 SCRAPY_ROOT = os.path.join(os.path.dirname(WEB_ROOT),'myspider')
-from webserver.getdata import SqlQuery
+from getdata import SqlQuery
 
 
 '''
@@ -17,8 +17,8 @@ from webserver.getdata import SqlQuery
 
 urls = (
     '/', 'index',
-    '/api/all', 'All',
-    '/api/topic', 'Topic',
+    '/api', 'api',
+    '/stat', 'stat',
 )
 
 
@@ -29,7 +29,7 @@ class index(object):
         return json_result
 
 
-class All(object):
+class api(object):
     params = {}
 
     def GET(self):
@@ -38,13 +38,9 @@ class All(object):
         return json_result
 
 
-class Topic(object):
-    params = {}
-
+class stat(object):
     def GET(self):
-        inputs = web.input()  # query:?type=1&name=admin;storage:{'type': u'1', 'name': u'admin'}
-        json_result = json.dumps(sqlhelper.select(inputs.get('count', None), inputs))
-        return json_result
+        pass
 
 
 if __name__ == '__main__':

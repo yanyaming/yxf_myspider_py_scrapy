@@ -1,15 +1,15 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import os
-import configparser
-cf = configparser.ConfigParser()
-cf.read(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"settings.cfg"))
+#import os
+#import configparser
+#cf = configparser.ConfigParser()
+#cf.read(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"settings.cfg"))
 
 #项目名称
-BOT_NAME = 'myspider'
+#BOT_NAME = 'myspider'
 #项目模块
-SPIDER_MODULES = ['myspider.spiders']
-NEWSPIDER_MODULE = 'myspider.spiders'
+#SPIDER_MODULES = ['myspider.spiders']
+#NEWSPIDER_MODULE = 'myspider.spiders'
 #代码模板路径，使用startproject命令创建新项目时使用
 #TEMPLATES_DIR='templates'
 

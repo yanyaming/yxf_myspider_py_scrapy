@@ -13,13 +13,10 @@ class fangchan_anjuke_zufang_spider(RedisSpider):
     name = 'fangchan_anjuke_zufang'
     allowed_domains = ['anjuke.ccom']
     custom_settings = {
-        # 'ITEM_PIPELINES': {
-        #     'myspider.pipelines.FangchanPipeline.fangchan_pipeline': 300,
-        # },
-        'PROXY': True,
+        'PROXY_ENABLE': True,
         'PROXY_MAX_USE': 10,
         'PROXY_FROM_WHERE': 'server',
-        'HEADER_STATICWITHPROXY':True,
+        'HEADER_STATIC':True,
     }
 
     def parse(self, response):
@@ -47,18 +44,15 @@ class fangchan_anjuke_zufang_spider(RedisSpider):
 
 
 #测试免费代理可行
-class FangtianxiaZufangSpider(RedisSpider):
+class fangchan_fangtianxia_zufang_spider(RedisSpider):
     count = {'all': 0, 'success': 0, 'failed': 0}
     name = 'fangchan_fangtianxia_zufang'
     allowed_domains = ['fang.com']
     custom_settings = {
-        # 'ITEM_PIPELINES': {
-        #     'myspider.pipelines.FangchanPipeline.fangchan_pipeline': 300
-        # },
-        'PROXY': True,
+        'PROXY_ENABLE': True,
         'PROXY_MAX_USE': 10,
         'PROXY_FROM_WHERE': 'server',
-        'HEADER_STATICWITHPROXY':True,
+        'HEADER_STATIC':True,
     }
 
     def parse(self, response):
@@ -84,18 +78,15 @@ class FangtianxiaZufangSpider(RedisSpider):
 
 
 #测试免费代理可行
-class WubatongchengZufangSpider(RedisSpider):
+class fangchan_58_zufang_spider(RedisSpider):
     count = {'all': 0, 'success': 0, 'failed': 0}
     name = 'fangchan_58_zufang'
     allowed_domains = ['58.com']
     custom_settings = {
-        # 'ITEM_PIPELINES': {
-        #     'myspider.pipelines.FangchanPipeline.fangchan_pipeline': 300
-        # },
-        'PROXY':True,
+        'PROXY_ENABLE':True,
         'PROXY_MAX_USE': 10,
         'PROXY_FROM_WHERE': 'server',
-        'HEADER_STATICWITHPROXY': True,
+        'HEADER_STATIC': True,
     }
 
     def parse(self, response):

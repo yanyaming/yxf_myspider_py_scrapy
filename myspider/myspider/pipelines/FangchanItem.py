@@ -8,9 +8,9 @@ from sqlalchemy.ext.declarative import declarative_base
 from myspider.settings import DATABASE_URL, DATABASE
 
 '''
-1.scrapy框架的Item类与sqlalchemy的Base类组合编程:
-    Column()建立sqlalchemy数据对象字段
-    Field()建立scrapy数据对象字段
+1.scrapy框架的Item类与sqlalchemy的Base类组合:
+    Column()建立sqlalchemy数据对象字段，用于与数据库表建立一一对应关系
+    Field()建立scrapy数据对象字段，可以不写Field()字段，只需继承scrapy.Item类，在spider里yield item就可以被pipeline截获
 2.在class中记录静态解析规则
 '''
 
@@ -74,7 +74,7 @@ DBSession = sessionmaker(bind=engine)
 
 
 class fangchan_anjuke_zufang_item(Base, scrapy.Item):
-    __tablename__ = "fangchan_anjuke_zufang"
+    __tablename__ = "fangchan_anjuke_zufang"  # sqlalchemy
     id = Column(Integer, primary_key=True, autoincrement=True)
 
     # listpage

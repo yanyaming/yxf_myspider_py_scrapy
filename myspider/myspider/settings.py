@@ -90,11 +90,11 @@ ROBOTSTXT_OBEY = False#True,此处不遵守robots协议
 #限制最大内存，超出则自动关闭爬虫
 #MEMUSAGE_LIMIT_MB=0
 
-#redis
-SCHEDULER = "scrapy_redis.scheduler.Scheduler"
-DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"
-SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'
-SCHEDULER_PERSIST = True
+#scrapy_redis
+SCHEDULER = "scrapy_redis.scheduler.Scheduler"#基于redis的调度器
+DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"#去重类
+SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'#基于redis的优先级队列
+SCHEDULER_PERSIST = True#持久化（关闭后可保存到磁盘，重启重新加载）
 
 # -----------------中间件等组件配置-------------------------
 
@@ -120,7 +120,7 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware': None,#100,禁用
     #http基本身份认证,http://user:pass@domain.com,把用户名密码加密后的数据放入请求头
     'scrapy.downloadermiddlewares.httpauth.HttpAuthMiddleware': 300,
-    #载入settings里的超时配置项
+    #载入settings里的超时配置
     'scrapy.downloadermiddlewares.downloadtimeout.DownloadTimeoutMiddleware': None,#350,禁用
     #载入settings里的预定义请求头
     'scrapy.downloadermiddlewares.defaultheaders.DefaultHeadersMiddleware': 400,

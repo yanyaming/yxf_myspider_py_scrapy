@@ -28,26 +28,34 @@ def send_email():
 
 class RequestFailMiddleware(object):
 
-    # spider流程出错（spider编程错误）
-    def process_spider_exception(self, response, exception, spider):
-        response.request.meta['proxy_failed_times'] += 1
-        spider.logger.info('----------spider GET failed')
-        # raise exception
-        # return response.request.replace(dont_filter=True)
-        raise exception
-
-    # downloader流程出错（因超时而未得到响应等）
+    # 截获下载中间件抛出的所有异常（请求阶段）
     def process_exception(self, request, exception, spider):
-        # request.meta['proxy_failed_times'] += 1
+        PROXY_ENABLE = spider.settings.get('PROXY_ENABLE', False)
+
+        if PROXY_ENABLE:
+            request.meta['proxy_failed_times'] += 1
         spider.logger.info('----------downloader GET failed')
         # if request.meta['proxy_failed_times']>5:
         #     traceback.print_exc(exception)
         # return request.replace(dont_filter=True)
         raise exception
 
-    # spider和downloader流程没有出错的情况下（成功得到响应内容），继续根据状态码筛选出错误的响应
+    # 截获爬虫中间件抛出的所有异常（响应阶段）
+    def process_spider_exception(self, response, exception, spider):
+        PROXY_ENABLE = spider.settings.get('PROXY_ENABLE',False)
+
+        if PROXY_ENABLE:
+            response.request.meta['proxy_failed_times'] += 1
+        spider.logger.info('----------spider GET failed')
+        # raise exception
+        # return response.request.replace(dont_filter=True)
+        raise exception
+
+    # 得到了响应，框架没有抛出异常，但仍然需要根据响应码删选正确结果，必要时需要手动抛出异常
     def process_response(self, request, response, spider):
+        PROXY_ENABLE = spider.settings.get('PROXY_ENABLE', False)
         http_code = response.status
+
         #1xx请求未完成，需要放行
         if http_code // 100 == 1:
             return response
@@ -57,22 +65,26 @@ class RequestFailMiddleware(object):
         #3xx重定向，304和302是有用的重定向（多为验证码页面），需要特殊处理；其他重定向是失败请求，需要重新加入队列
         if http_code // 100 == 3 and http_code != 304 and http_code != 302:
             spider.logger.info('status code:'+str(http_code))
-            request.meta['proxy_failed_times'] += 1
+            if PROXY_ENABLE:
+                request.meta['proxy_failed_times'] += 1
             return request.replace(dont_filter=True)
         if http_code == 304:
-            request.meta['proxy_failed_times'] += 1
+            if PROXY_ENABLE:
+                request.meta['proxy_failed_times'] += 1
             spider.logger.info('status code:304')
             return response
         if http_code == 302:
-            request.meta['proxy_failed_times'] += 1
+            if PROXY_ENABLE:
+                request.meta['proxy_failed_times'] += 1
             spider.logger.info('status code:302')
             return response
         #4xx找不到，多数情况确实是因为链接失效找不到（可能有少部分是反爬虫的误导），因为是无效链接所以直接丢掉
         if http_code // 100 == 4:
-            spider.logger.info('status code:4xx')
+            spider.logger.info('status code:'+str(http_code))
             raise IgnoreRequest(str(http_code))
         #5xx服务器错误，大型网站一般很少出现服务器错误，所以可认为是反爬虫措施，需要重新加入队列
         if http_code // 100 == 5:
-            request.meta['proxy_failed_times'] += 1
+            if PROXY_ENABLE:
+                request.meta['proxy_failed_times'] += 1
             spider.logger.info('status code:'+str(http_code))
             return request.replace(dont_filter=True)

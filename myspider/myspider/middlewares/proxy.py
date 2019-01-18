@@ -23,7 +23,7 @@ redis_pool = redis.ConnectionPool(host=REDIS['host'], port=int(REDIS['port']), d
 
 #每次请求都从redis随机查询出一个代理IP，若有效代理过少则通过API更新代理数据，为每个爬虫单独维护代理池
 #代理IP必须使用高匿，http/https视情况而定
-def getRandomProxy(from_where,protocol,proxy_http,proxy_https):
+def _getRandomProxy(from_where,protocol,proxy_http,proxy_https):
     r = redis.StrictRedis(connection_pool=redis_pool)
     lenth1 = r.llen(proxy_http)
     lenth2 = r.llen(proxy_https)
@@ -78,7 +78,7 @@ def getRandomProxy(from_where,protocol,proxy_http,proxy_https):
     return item
 
 #多次失败则移出redis
-def deleteUselessProxy(proxy,proxy_http,proxy_https):
+def _deleteUselessProxy(proxy,proxy_http,proxy_https):
     r = redis.StrictRedis(connection_pool=redis_pool)
     if proxy.split('://')[0] == 'http':
         r.lrem(proxy_http,1,proxy)
@@ -90,27 +90,31 @@ def deleteUselessProxy(proxy,proxy_http,proxy_https):
 class ProxyMiddleware(object):
 
     def process_request(self, request, spider):
-        use_proxy=spider.settings.get('PROXY',False)
-        if use_proxy:
+        PROXY_ENABLE=spider.settings.get('PROXY_ENABLE',False)
+        PROXY_MAX_USE = spider.settings.get('PROXY_MAX_USE', 10)
+        PROXY_FROM_WHERE = spider.settings.get('PROXY_FROM_WHERE', 'server')
+
+        # 添加代理
+        if PROXY_ENABLE:
             proxy_http=spider.name+':proxy_http'
             proxy_https=spider.name+':proxy_https'
-            max_use = spider.settings.get('PROXY_MAX_USE',10)
             protocol = request.url.split('://')[0] #网址是http就用http代理，是https就用https代理
-            from_where = spider.settings.get('PROXY_FROM_WHERE','api')
             # 统计使用此代理的累积次数，超过数量则换代理
             used_times = request.meta.get('proxy_used_times',0)
             # 统计使用此代理的失败次数，超过数量则删除代理
             failed_times = request.meta.get('proxy_failed_times',0)
-            if 'proxy' not in request.meta or failed_times >= 3 or used_times >= max_use:
+            # 操作代理
+            if 'proxy' not in request.meta or failed_times >= 3 or used_times >= PROXY_MAX_USE:
                 if failed_times >= 3:
-                    proxy=str(request.meta['proxy'])
-                    deleteUselessProxy(proxy,proxy_http,proxy_https)
-                request.meta['proxy'] = getRandomProxy(from_where, protocol, proxy_http, proxy_https)
+                    proxy=str(request.meta['proxy'])  # proxy是scrapy默认的代理字段
+                    _deleteUselessProxy(proxy,proxy_http,proxy_https)  # 如果在当前代理下失败超过3次则删除redis代理库的本代理
+                request.meta['proxy'] = _getRandomProxy(PROXY_FROM_WHERE, protocol, proxy_http, proxy_https)  # 获取代理
                 request.meta['proxy_used_times'] = 0
                 request.meta['proxy_failed_times'] = 0
-            # 使用代理并更新使用次数
+            # 更新代理使用次数
             request.meta['proxy_used_times'] += 1
             print('-------------use proxy:'+str(request.meta['proxy']))
         else:
             pass
+
         return None

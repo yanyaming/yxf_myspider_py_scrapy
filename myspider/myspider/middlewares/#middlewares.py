@@ -3,6 +3,9 @@
 from scrapy import signals
 
 
+# SpiderMiddleware&DownloaderMiddleware&ItemPipelineManager的共同基类
+# MiddlewareManager另有两个信号处理函数：open_spider和close_spider，对所有子类有效
+
 class MyspiderSpiderMiddleware(object):
 
     @classmethod
@@ -12,10 +15,12 @@ class MyspiderSpiderMiddleware(object):
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
         return s
 
+    #自定义处理函数
     def spider_opened(self, spider):
         # 爬虫实例开始运行的初始动作
         spider.logger.info('Spider opened: %s' % spider.name)
-
+    
+    #3
     def process_start_requests(self, start_requests, spider):
         # 爬虫发出请求，递交给下载中间件之前的处理
         #
@@ -24,6 +29,7 @@ class MyspiderSpiderMiddleware(object):
         for r in start_requests:
             yield r
 
+    #4
     def process_spider_input(self, response, spider):
         # 处理下载器返回的响应，获取经过下载中间件以后的响应内容，最终移交给爬虫
         #
@@ -32,6 +38,7 @@ class MyspiderSpiderMiddleware(object):
         # exception:发出异常，调用各爬虫中间件的process_spider_exception()
         return None
 
+    #5
     def process_spider_output(self, response, result, spider):
         # 爬虫处理响应完成之后，接收响应和处理结果，选择返回新的请求或者数据项目
         #
@@ -40,6 +47,7 @@ class MyspiderSpiderMiddleware(object):
         for i in result:
             yield i
 
+    #6
     def process_spider_exception(self, response, exception, spider):
         # 处理爬虫以及爬虫中间件读取响应的异常
         #
@@ -58,10 +66,12 @@ class MyspiderDownloaderMiddleware(object):
         crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
         return s
 
+    #自定义处理函数
     def spider_opened(self, spider):
         # 爬虫实例开始运行的初始动作
         spider.logger.info('Spider opened: %s' % spider.name)
 
+    #3
     def process_request(self, request, spider):
         # 爬虫发出请求后接收请求内容，处理请求，最终递交给下载器访问网站
         #
@@ -72,6 +82,7 @@ class MyspiderDownloaderMiddleware(object):
         # IgnoreRequest:发出异常，调用各下载中间件的process_exception()
         return None
 
+    #4
     def process_response(self, request, response, spider):
         # 处理响应，接收下载器访问网站得到的响应，最终传递给爬虫解析
         #
@@ -81,6 +92,7 @@ class MyspiderDownloaderMiddleware(object):
         # IgnoreRequest:发出异常，调用各下载中间件的process_exception()
         return response
 
+    #5
     def process_exception(self, request, exception, spider):
         # 处理下载器以及下载中间件访问网站和读取响应的异常
         #
