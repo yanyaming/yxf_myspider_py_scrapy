@@ -1,0 +1,8 @@
+[chrome]
+chromedriver==2.45
+
+[firefox]
+geckodriver==0.23.0
+
+[phantomjs]
+phantomjs==2.1.1

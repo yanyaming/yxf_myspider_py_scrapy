@@ -46,12 +46,12 @@ class DynamicHeaderMiddleware(object):
     ]
 
     def process_request(self, request, spider):
-        HEADER_STATICWITHPROXY = spider.settings.get('HEADER_STATICWITHPROXY', False)
+        HEADER_STATIC = spider.settings.get('HEADER_STATIC', False)
 
         # 1.添加UA
         ua = random.choice(self.user_agent_list)
         # 如果设置了静态UA则在同一个代理下持续使用同一个UA达到10次以后才会更换
-        if HEADER_STATICWITHPROXY:
+        if HEADER_STATIC:
             # 如果还没有统计次数说明是初次执行，默认设置里面没有UA，需要添加UA
             if 'proxy_used_times' not in request.meta:
                 request.headers['User-Agent']=ua
@@ -68,6 +68,5 @@ class DynamicHeaderMiddleware(object):
         # 2.添加host
         host = request.url.split('://')[1].split('/')[0]
         request.headers['Host']=host
-        # print(request.headers['User-Agent'])
 
         return None

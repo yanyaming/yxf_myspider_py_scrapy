@@ -20,27 +20,29 @@ class fangchan_anjuke_zufang_spider(RedisSpider):
     }
 
     def parse(self, response):
-        # if response.status==200:
-            # self.success+=1
-            # print("success num:"+str(self.success))
-        # yield scrapy.Request(url=response.request.url,headers=response.request.headers, meta=response.request.meta).replace(dont_filter=True)
-        list_content = response.css('.list-content .zu-itemmod')
-        for i in list_content:
-            item = fangchan_anjuke_zufang_item()
-            item.parse_listpage(response, i)
-            url_detailpage=response.css('.zu-itemmod div::attr(link)').extract_first()
-            print('----------------------'+str(item))
-            yield scrapy.Request(url=url_detailpage,callback=self.parsedetail)
-            yield item
-        url_nextpage=response.css('.aNxt::attr(href)').extract_first()
-        yield scrapy.Request(url=url_nextpage)
+        if response.status==200:#如果是200成功说明scrapy可以得到正确网页，否则需要使用requests或selenium避免反爬
+            list_content = response.css('.list-content .zu-itemmod')
+            for i in list_content:
+                item = fangchan_anjuke_zufang_item()
+                item.parse_listpage(response, i)
+                url_detailpage=response.css('.zu-itemmod div::attr(link)').extract_first()
+                print('----------------------'+str(item))
+                yield scrapy.Request(url=url_detailpage,callback=self.parsedetail)
+                yield item
+            url_nextpage=response.css('.aNxt::attr(href)').extract_first()
+            yield scrapy.Request(url=url_nextpage)
+        elif response.status==302:
+            pass#这里需要使用selenium操作浏览器
 
     # callback回调链可在一个爬虫里递进深入爬取
     def parsedetail(self, response):
-        item = fangchan_anjuke_zufang_item()
-        item.parse_detailpage(response)
-        print('----------------------'+str(item))
-        yield item
+        if response.status == 200:
+            item = fangchan_anjuke_zufang_item()
+            item.parse_detailpage(response)
+            print('----------------------'+str(item))
+            yield item
+        elif response.status == 302:
+            pass
 
 
 #测试免费代理可行

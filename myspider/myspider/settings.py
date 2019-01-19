@@ -10,6 +10,7 @@ BOT_NAME = 'myspider'
 # 项目模块
 SPIDER_MODULES = ['myspider.spiders']
 NEWSPIDER_MODULE = 'myspider.spiders'
+BASE_DIR = '/opt/yxf_myspider_py_scrapy'
 # 代码模板路径，使用startproject命令创建新项目时使用
 # TEMPLATES_DIR='templates'
 

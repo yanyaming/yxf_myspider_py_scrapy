@@ -7,5 +7,10 @@ __pycache__
 *.pid
 *.egg
 
+#webdriver
+webdriver/*
+!webdriver/notes.txt
+!webdriver/webdriver.zip
+
 #sensitive config
 myspider/settings.cfg

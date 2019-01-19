@@ -3,9 +3,9 @@
 import scrapy
 import traceback
 from scrapy.exceptions import IgnoreRequest
-import smtplib # python自带的邮件库
-from email.mime.text import MIMEText # python自带的邮件库
-from email.header import Header # python自带的邮件库
+import smtplib  # python自带的邮件库
+from email.mime.text import MIMEText  # python自带的邮件库
+from email.header import Header  # python自带的邮件库
 from myspider.settings import EMAIL
 
 '''
@@ -28,17 +28,14 @@ def send_email():
 
 class RequestFailMiddleware(object):
 
-    # 截获下载中间件抛出的所有异常（请求阶段）
+    # 截获下载中间件抛出的所有异常（请求阶段）。twisted的异常类型：多为传输层TCP的timeout或者refused
     def process_exception(self, request, exception, spider):
         PROXY_ENABLE = spider.settings.get('PROXY_ENABLE', False)
 
         if PROXY_ENABLE:
             request.meta['proxy_failed_times'] += 1
         spider.logger.info('----------downloader GET failed')
-        # if request.meta['proxy_failed_times']>5:
-        #     traceback.print_exc(exception)
-        # return request.replace(dont_filter=True)
-        raise exception
+        return request.replace(dont_filter=True)  # 重新把请求加入队列并设置不被筛选掉
 
     # 截获爬虫中间件抛出的所有异常（响应阶段）
     def process_spider_exception(self, response, exception, spider):
@@ -47,7 +44,6 @@ class RequestFailMiddleware(object):
         if PROXY_ENABLE:
             response.request.meta['proxy_failed_times'] += 1
         spider.logger.info('----------spider GET failed')
-        # raise exception
         # return response.request.replace(dont_filter=True)
         raise exception
 
@@ -62,18 +58,13 @@ class RequestFailMiddleware(object):
         #2xx成功响应，需要放行
         if http_code // 100 == 2:
             return response
-        #3xx重定向，304和302是有用的重定向（多为验证码页面），需要特殊处理；其他重定向是失败请求，需要重新加入队列
-        if http_code // 100 == 3 and http_code != 304 and http_code != 302:
+        #3xx重定向，爬虫正常不会出现304未改动重定向，会可能有302暂时重定向（反爬：验证码，空页面）；其他是失败请求，需要重新加入队列
+        if http_code // 100 == 3 and http_code != 302:
             spider.logger.info('status code:'+str(http_code))
             if PROXY_ENABLE:
                 request.meta['proxy_failed_times'] += 1
             return request.replace(dont_filter=True)
-        if http_code == 304:
-            if PROXY_ENABLE:
-                request.meta['proxy_failed_times'] += 1
-            spider.logger.info('status code:304')
-            return response
-        if http_code == 302:
+        if http_code == 302:#无论是验证码页面还是空页面都是反爬措施，都需要启用selenium
             if PROXY_ENABLE:
                 request.meta['proxy_failed_times'] += 1
             spider.logger.info('status code:302')

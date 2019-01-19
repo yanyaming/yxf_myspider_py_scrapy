@@ -8,11 +8,13 @@ from sqlalchemy.ext.declarative import declarative_base
 from myspider.settings import DATABASE_URL, DATABASE
 
 '''
-1.scrapy框架的Item类与sqlalchemy的Base类组合:
-    Column()建立sqlalchemy数据对象字段，用于与数据库表建立一一对应关系
-    Field()建立scrapy数据对象字段，可以不写Field()字段，只需继承scrapy.Item类，在spider里yield item就可以被pipeline截获
-2.在class中记录静态解析规则
+1.Field()建立scrapy数据对象字段，在spider里yield item就可以被pipeline截获
+2.Column()建立sqlalchemy数据对象字段，用于与数据库表建立一一对应关系
+3.在class中记录静态解析规则
+4.scrapyItem面向爬虫框架，sqlalchemyColumn面向数据存储映射，两者必须都要实现
+5.scrapy_djangoitem可以统一两者，但加入了复杂的django框架得不偿失
 '''
+
 
 Base = declarative_base()
 # 初始化数据库连接:
@@ -21,60 +23,84 @@ engine = create_engine(DATABASE_URL)
 DBSession = sessionmaker(bind=engine)
 
 
-# class AnjukeZufangItem(scrapy.Item):
-#     #listpage
-#     #编码
-#     bianma = scrapy.Field()
-#     #标题
-#     biaoti = scrapy.Field()
-#     #图片（文件）
-#     tupian = scrapy.Field()
-#     #费用
-#     feiyong = scrapy.Field()
-#     #地址
-#     dizhi = scrapy.Field()
-#     #小区
-#     xiaoqu = scrapy.Field()
-#     #户型
-#     huxing = scrapy.Field()
-#     #楼层
-#     louceng = scrapy.Field()
-#     #面积
-#     mianji = scrapy.Field()
-#     #租赁方式
-#     zulinfangshi = scrapy.Field()
-#     #联系人
-#     lianxiren = scrapy.Field()
-#     #朝向
-#     chaoxiang = scrapy.Field()
-#     #附近地铁
-#     fujinditie = scrapy.Field()
-# 
-#     #detailpage
-#     #装修程度
-#     zhuangxiuchengdu = scrapy.Field()
-#     #住宅类型
-#     zhuzhaileixing = scrapy.Field()
-#     #户型明细
-#     huxingmingxi = scrapy.Field()
-#     #付款类型
-#     fukuanleixing = scrapy.Field()
-#     #发布时间
-#     fabushijian = scrapy.Field()
-#     #房屋配套（列表）
-#     fangwupeitao = scrapy.Field()
-#     #房源概况（长文本）
-#     fangyuangaikuang = scrapy.Field()
-#     #小区问答（长文本）
-#     xiaoquwenda = scrapy.Field()
-# 
-#     #info
-#     crawl_time = scrapy.Field()
-#     crawl_update_time = scrapy.Field()
+class fangchan_anjuke_zufang_item(scrapy.Item):
+    # listpage
+    # 编码
+    bianma = scrapy.Field()
+    # 标题
+    biaoti = scrapy.Field()
+    # 图片（文件）
+    tupian = scrapy.Field()
+    # 费用
+    feiyong = scrapy.Field()
+    # 地址
+    dizhi = scrapy.Field()
+    # 小区
+    xiaoqu = scrapy.Field()
+    # 户型
+    huxing = scrapy.Field()
+    # 楼层
+    louceng = scrapy.Field()
+    # 面积
+    mianji = scrapy.Field()
+    # 租赁方式
+    zulinfangshi = scrapy.Field()
+    # 联系人
+    lianxiren = scrapy.Field()
+    # 朝向
+    chaoxiang = scrapy.Field()
+    # 附近地铁
+    fujinditie = scrapy.Field()
+
+    # detailpage
+    # 装修程度
+    zhuangxiuchengdu = scrapy.Field()
+    # 住宅类型
+    zhuzhaileixing = scrapy.Field()
+    # 户型明细
+    huxingmingxi = scrapy.Field()
+    # 付款类型
+    fukuanleixing = scrapy.Field()
+    # 发布时间
+    fabushijian = scrapy.Field()
+    # 房屋配套（列表）
+    fangwupeitao = scrapy.Field()
+    # 房源概况（长文本）
+    fangyuangaikuang = scrapy.Field()
+    # 小区问答（长文本）
+    xiaoquwenda = scrapy.Field()
+
+    # info
+    crawl_time = scrapy.Field()
+    crawl_update_time = scrapy.Field()
 
 
-class fangchan_anjuke_zufang_item(Base, scrapy.Item):
-    __tablename__ = "fangchan_anjuke_zufang"  # sqlalchemy
+class fangchan_anjuke_xinfang_item(scrapy.Item):
+    pass
+
+
+class fangchan_anjuke_ershoufang_item(scrapy.Item):
+    pass
+
+
+class fangchan_fangtianxia_zufang_item(scrapy.Item):
+    pass
+
+
+class fangchan_fangtianxia_xinfang_item(scrapy.Item):
+    pass
+
+
+class fangchan_fangtianxia_ershoufang_item(scrapy.Item):
+    pass
+
+
+class fangchan_wubatongcheng_zufang_item(scrapy.Item):
+    pass
+
+
+class fangchan_anjuke_zufang_model(Base):
+    __tablename__ = "fangchan_anjuke_zufang"
     id = Column(Integer, primary_key=True, autoincrement=True)
 
     # listpage
@@ -174,27 +200,3 @@ class fangchan_anjuke_zufang_item(Base, scrapy.Item):
         self.fangyuangaikuang = response.css('.auto-general::text').extract_first()
         #小区问答（长文本）
         self.xiaoquwenda = response.css('.comm-qa').xpath('//*text()').extract_first()
-
-
-class fangchan_anjuke_xinfang_item(scrapy.Item):
-    pass
-
-
-class fangchan_anjuke_ershoufang_item(scrapy.Item):
-    pass
-
-
-class fangchan_fangtianxia_zufang_item(scrapy.Item):
-    pass
-
-
-class fangchan_fangtianxia_xinfang_item(scrapy.Item):
-    pass
-
-
-class fangchan_fangtianxia_ershoufang_item(scrapy.Item):
-    pass
-
-
-class fangchan_wubatongcheng_zufang_item(scrapy.Item):
-    pass
