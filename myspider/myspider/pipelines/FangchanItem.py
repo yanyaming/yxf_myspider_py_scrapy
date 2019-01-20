@@ -75,30 +75,6 @@ class fangchan_anjuke_zufang_item(scrapy.Item):
     crawl_update_time = scrapy.Field()
 
 
-class fangchan_anjuke_xinfang_item(scrapy.Item):
-    pass
-
-
-class fangchan_anjuke_ershoufang_item(scrapy.Item):
-    pass
-
-
-class fangchan_fangtianxia_zufang_item(scrapy.Item):
-    pass
-
-
-class fangchan_fangtianxia_xinfang_item(scrapy.Item):
-    pass
-
-
-class fangchan_fangtianxia_ershoufang_item(scrapy.Item):
-    pass
-
-
-class fangchan_wubatongcheng_zufang_item(scrapy.Item):
-    pass
-
-
 class fangchan_anjuke_zufang_model(Base):
     __tablename__ = "fangchan_anjuke_zufang"
     id = Column(Integer, primary_key=True, autoincrement=True)
@@ -153,15 +129,15 @@ class fangchan_anjuke_zufang_model(Base):
     crawl_time = Column(String)
     crawl_update_time = Column(String)
 
-    def parse_listpage(self, response, i):
+    def parse_listpage(self, response, iter):
         #编码
-        self.bianma = i.css('.zu-itemmod .zu-info h3 a::attr(href)').extract_first().split('/')[-1]
+        self.bianma = iter.css('.zu-itemmod .zu-info h3 a::attr(href)').extract_first().split('/')[-1]
         #标题
-        self.biaoti = str(i.css('.zu-itemmod .zu-info h3 a::attr(title)').extract_first())
+        self.biaoti = str(iter.css('.zu-itemmod .zu-info h3 a::attr(title)').extract_first())
         #图片（文件）
-        self.tupian = str(i.css('.zu-itemmod .thumbnail::attr(src)').extract_first())
+        self.tupian = str(iter.css('.zu-itemmod .thumbnail::attr(src)').extract_first())
         #费用
-        self.feiyong = str(i.css('.zu-itemmod .zu-side strong::text').extract_first())+str(i.css('.zu-side p::text').extract())
+        self.feiyong = str(iter.css('.zu-itemmod .zu-side strong::text').extract_first())+str(iter.css('.zu-side p::text').extract())
         #地址
         self.dizhi = str(response.css('.zu-itemmod .zu-info address::text').extract_first())
         #小区
@@ -181,7 +157,7 @@ class fangchan_anjuke_zufang_model(Base):
         #附近地铁
         self.fujinditie = str(response.css('.zu-itemmod .zu-info').xpath('//*p[2]/span[3]/text()').extract_first())
 
-    def parse_detailpage(self, response, i=None):
+    def parse_detailpage(self, response):
         #编码
         self.bianma = str(response.url.split('/')[-1])
         #装修程度
@@ -200,3 +176,27 @@ class fangchan_anjuke_zufang_model(Base):
         self.fangyuangaikuang = response.css('.auto-general::text').extract_first()
         #小区问答（长文本）
         self.xiaoquwenda = response.css('.comm-qa').xpath('//*text()').extract_first()
+
+
+class fangchan_anjuke_xinfang_item(scrapy.Item):
+    pass
+
+
+class fangchan_anjuke_ershoufang_item(scrapy.Item):
+    pass
+
+
+class fangchan_fangtianxia_zufang_item(scrapy.Item):
+    pass
+
+
+class fangchan_fangtianxia_xinfang_item(scrapy.Item):
+    pass
+
+
+class fangchan_fangtianxia_ershoufang_item(scrapy.Item):
+    pass
+
+
+class fangchan_wubatongcheng_zufang_item(scrapy.Item):
+    pass

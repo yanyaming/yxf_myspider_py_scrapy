@@ -4,10 +4,12 @@ scrapyd-client
 psycopg2
 redis
 scrapy-redis
+scrapy-splash
 requests
 bs4
 lxml
 psutil
+pyvirtualdisplay
 selenium>=3.14.1
 chardet>=2.3.0
 gevent>=1.2.0

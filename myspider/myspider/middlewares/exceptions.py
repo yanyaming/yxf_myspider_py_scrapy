@@ -2,11 +2,15 @@
 # -*- coding: utf-8 -*-
 import scrapy
 import traceback
+import time
+from scrapy import Selector
+from scrapy.http import HtmlResponse
 from scrapy.exceptions import IgnoreRequest
 import smtplib  # python自带的邮件库
 from email.mime.text import MIMEText  # python自带的邮件库
 from email.header import Header  # python自带的邮件库
 from myspider.settings import EMAIL
+from myspider.downloaders import selenium,requests
 
 '''
 每次请求的异常处理，放行正确的请求与响应，对出错的请求选择重新加入队列或者丢弃
@@ -27,6 +31,7 @@ def send_email():
 
 
 class RequestFailMiddleware(object):
+    browser = None
 
     # 截获下载中间件抛出的所有异常（请求阶段）。twisted的异常类型：多为传输层TCP的timeout或者refused
     def process_exception(self, request, exception, spider):
@@ -68,6 +73,12 @@ class RequestFailMiddleware(object):
             if PROXY_ENABLE:
                 request.meta['proxy_failed_times'] += 1
             spider.logger.info('status code:302')
+            if not self.browser:
+                self.browser = selenium.Chrome().load()
+            self.browser.get(response.request.url)
+            time.sleep(3)
+            response = HtmlResponse(url=self.browser.current_url,body=self.browser.page_source)
+            self.browser.close()
             return response
         #4xx找不到，多数情况确实是因为链接失效找不到（可能有少部分是反爬虫的误导），因为是无效链接所以直接丢掉
         if http_code // 100 == 4:

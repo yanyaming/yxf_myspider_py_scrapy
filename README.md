@@ -5,7 +5,7 @@ yxf_spider_py_scrapy : 爬虫服务项目
 
 项目主题：通用爬虫服务框架  
 
-开发环境：Linux（CentOS 7），python，scrapy，redis，postgresql   
+开发环境：Linux(CentOS7),python3  
 
 编程语言：python  
 
@@ -23,23 +23,35 @@ pip>=18.x
 
 postgresql  
 
+mongodb  
+
+redis  
+
+docker-splash  
+
 yxf_myspider_py_scrapy/requirments.txt  
 
 ### 项目架构
 
-队列存储服务器-VPS：redis  
+分布式队列存储服务器-VPS：redis([http://iotec.cc:6379])  
 
-数据存储服务器-VPS：postgresql  
+关系数据存储服务器-VPS：postgresql([http://iotec.cc:5432])  
 
-爬虫管理服务器-VPS：scrapyd  
+非关系数据存储服务器-VPS：mongodb([http://iotec.cc:27017])  
 
-代理IP服务器-本地：IPProxyPool（在别人的项目基础上做了修改。原项目：https://github.com/qiyeboy/IPProxyPool）  
+代理IP服务器-VPS：IPProxyPool([http://iotec.cc:8001])（别人的原项目：[https://github.com/qiyeboy/IPProxyPool]）  
+
+爬虫管理服务器-VPS：scrapyd([http://iotec.cc:6800])  
+
+下载服务器-本地：splash([http://localhost:8050])  
 
 工作服务器-本地：scrapy(myspider)  
 
-数据查询API服务器-VPS：webserver  
+数据API服务器-VPS：webserver([http://iotec.cc:8080])  
 
-    前端展示服务器-VPS：mysite(http://avata.cc)
+搜索引擎服务器-VPS：elasticsearch([http://iotec.cc])  
+
+前端展示服务器-VPS：mysite([http://avata.cc])  
 
 ### Scrapy项目开发  
 
