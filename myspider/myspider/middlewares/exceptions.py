@@ -69,7 +69,7 @@ class RequestFailMiddleware(object):
             if PROXY_ENABLE:
                 request.meta['proxy_failed_times'] += 1
             return request.replace(dont_filter=True)
-        if http_code == 302:#无论是验证码页面还是空页面都是反爬措施，都需要启用selenium
+        if http_code == 302:#无论是验证码页面还是空页面都是反爬措施，都需要使用非原生下载器
             if PROXY_ENABLE:
                 request.meta['proxy_failed_times'] += 1
             spider.logger.info('status code:302')

@@ -91,14 +91,13 @@ ROBOTSTXT_OBEY = False#True,此处不遵守robots协议
 #限制最大内存，超出则自动关闭爬虫
 #MEMUSAGE_LIMIT_MB=0
 
-#scrapy_redis
+# -----------------中间件等组件配置-------------------------
+
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"#基于redis的调度器
 DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"#基于redis的url去重类
 SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'#基于redis的优先级队列
 SCHEDULER_PERSIST = True#持久化（关闭后可保存到磁盘，重启重新加载）
 HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'#基于splash的缓存
-
-# -----------------中间件等组件配置-------------------------
 
 # spider中间件
 SPIDER_MIDDLEWARES = {
@@ -166,7 +165,7 @@ DOWNLOADER_MIDDLEWARES = {
 
 # pipelines管道
 ITEM_PIPELINES = {
-    #BASE
+    #REDIS
     #REDIS任务队列管理相关
     'scrapy_redis.pipelines.RedisPipeline': 300,
 

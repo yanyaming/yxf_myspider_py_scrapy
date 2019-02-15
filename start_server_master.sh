@@ -23,7 +23,7 @@ cd ..
 
 echo "server is running in background(master)"
 echo "redis is already:port=6379(public)"
-echo "postgresql is already:port=5432(public)"
+echo "mongodb is already:port=27017(public)"
 echo "ipproxypool:port=8001(public)"
 echo "scrapyd:port=6800(public)"
 echo "webserver:port=8080(public)"

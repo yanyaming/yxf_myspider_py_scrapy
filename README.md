@@ -5,7 +5,7 @@ yxf_spider_py_scrapy : 爬虫服务项目
 
 项目主题：通用爬虫服务框架  
 
-开发环境：Linux(CentOS7),python3  
+开发环境：Linux(CentOS7)  
 
 编程语言：python  
 
@@ -28,6 +28,8 @@ mongodb
 redis  
 
 docker-splash  
+
+java-elasticsearch
 
 yxf_myspider_py_scrapy/requirments.txt  
 
@@ -52,20 +54,6 @@ yxf_myspider_py_scrapy/requirments.txt
 搜索引擎服务器-VPS：elasticsearch([http://iotec.cc])  
 
 前端展示服务器-VPS：mysite([http://avata.cc])  
-
-### Scrapy项目开发  
-
-1.初始化工程:  
-
-	进入想要放置scrapy项目的路径：
-	/usr/local/python3/bin/scrapy startproject myspider——新建一个主项目，会自动生成多个文件
-
-2.为了适应健壮性、通用性、分布式目的，将./myspider/myspider目录内修改为新的组织形式（略去init文件）:  
-
-	settings.py——爬虫配置文件
-	settings.cfg——敏感信息配置文件（克隆代码使用时需手动创建）
-	redis.py——队列存储管理
-
 
 ### 思路
 

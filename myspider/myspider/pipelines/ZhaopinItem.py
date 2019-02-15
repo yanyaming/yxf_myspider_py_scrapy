@@ -3,5 +3,5 @@
 import scrapy
 
 
-class MyspiderItem(scrapy.Item):
+class zhaopin_item(scrapy.Item):
     name = scrapy.Field()

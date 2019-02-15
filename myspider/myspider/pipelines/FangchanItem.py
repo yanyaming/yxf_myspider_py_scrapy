@@ -1,26 +1,11 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import scrapy
-from sqlalchemy import Column, create_engine
-from sqlalchemy import String, Integer  # 数据字段类型
-from sqlalchemy.orm import sessionmaker
-from sqlalchemy.ext.declarative import declarative_base
-from myspider.settings import DATABASE_URL, DATABASE
 
 '''
 1.Field()建立scrapy数据对象字段，在spider里yield item就可以被pipeline截获
-2.Column()建立sqlalchemy数据对象字段，用于与数据库表建立一一对应关系
-3.在class中记录静态解析规则
-4.scrapyItem面向爬虫框架，sqlalchemyColumn面向数据存储映射，两者必须都要实现
-5.scrapy_djangoitem可以统一两者，但加入了复杂的django框架得不偿失
+2.在class中记录静态解析规则
 '''
-
-
-Base = declarative_base()
-# 初始化数据库连接:
-engine = create_engine(DATABASE_URL)
-# 创建DBSession类型:
-DBSession = sessionmaker(bind=engine)
 
 
 class fangchan_anjuke_zufang_item(scrapy.Item):
@@ -72,62 +57,6 @@ class fangchan_anjuke_zufang_item(scrapy.Item):
 
     # info
     crawl_time = scrapy.Field()
-    crawl_update_time = scrapy.Field()
-
-
-class fangchan_anjuke_zufang_model(Base):
-    __tablename__ = "fangchan_anjuke_zufang"
-    id = Column(Integer, primary_key=True, autoincrement=True)
-
-    # listpage
-    # 编码
-    bianma = Column(String)
-    # 标题
-    biaoti = Column(String)
-    # 图片（文件）
-    tupian = Column(String)
-    # 费用
-    feiyong = Column(String)
-    # 地址
-    dizhi = Column(String)
-    # 小区
-    xiaoqu = Column(String)
-    # 户型
-    huxing = Column(String)
-    # 楼层
-    louceng = Column(String)
-    # 面积
-    mianji = Column(String)
-    # 租赁方式
-    zulinfangshi = Column(String)
-    # 联系人
-    lianxiren = Column(String)
-    # 朝向
-    chaoxiang = Column(String)
-    # 附近地铁
-    fujinditie = Column(String)
-
-    # detailpage
-    # 装修程度
-    zhuangxiuchengdu = Column(String)
-    # 住宅类型
-    zhuzhaileixing = Column(String)
-    # 户型明细
-    huxingmingxi = Column(String)
-    # 付款类型
-    fukuanleixing = Column(String)
-    # 发布时间
-    fabushijian = Column(String)
-    # 房屋配套（列表）
-    fangwupeitao = Column(String)
-    # 房源概况（长文本）
-    fangyuangaikuang = Column(String)
-    # 小区问答（长文本）
-    xiaoquwenda = Column(String)
-
-    # info
-    crawl_time = Column(String)
-    crawl_update_time = Column(String)
 
     def parse_listpage(self, response, iter):
         #编码
@@ -158,8 +87,6 @@ class fangchan_anjuke_zufang_model(Base):
         self.fujinditie = str(response.css('.zu-itemmod .zu-info').xpath('//*p[2]/span[3]/text()').extract_first())
 
     def parse_detailpage(self, response):
-        #编码
-        self.bianma = str(response.url.split('/')[-1])
         #装修程度
         self.zhuangxiuchengdu = response.css('.house-info-zufang').xpath('//*li[6]/span[2]/text()').extract_first()
         #住宅类型

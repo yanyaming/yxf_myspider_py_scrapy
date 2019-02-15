@@ -21,6 +21,7 @@ redis常用操作：
 
 redis_pool = redis.ConnectionPool(host=REDIS['host'], port=int(REDIS['port']), db=int(REDIS['db']),password=REDIS['password'])
 
+
 #每次请求都从redis随机查询出一个代理IP，若有效代理过少则通过API更新代理数据，为每个爬虫单独维护代理池
 #代理IP必须使用高匿，http/https视情况而定
 def _getRandomProxy(from_where,protocol,proxy_http,proxy_https):
@@ -76,6 +77,7 @@ def _getRandomProxy(from_where,protocol,proxy_http,proxy_https):
     else:
         return None
     return item
+
 
 #多次失败则移出redis
 def _deleteUselessProxy(proxy,proxy_http,proxy_https):
