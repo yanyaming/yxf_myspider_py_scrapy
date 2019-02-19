@@ -41,7 +41,7 @@ yxf_myspider_py_scrapy/requirments.txt
 
 非关系数据存储服务器-VPS：mongodb([http://iotec.cc:27017])  
 
-代理IP服务器-VPS：IPProxyPool([http://iotec.cc:8001])（别人的原项目：[https://github.com/qiyeboy/IPProxyPool]）  
+代理IP服务器-VPS：IPProxyPool([http://iotec.cc:8001])  （别人的原项目：[https://github.com/qiyeboy/IPProxyPool]）  
 
 爬虫管理服务器-VPS：scrapyd([http://iotec.cc:6800])  
 

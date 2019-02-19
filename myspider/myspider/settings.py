@@ -60,6 +60,9 @@ DEFAULT_REQUEST_HEADERS = {
     'Upgrade-Insecure-Requests': '1',
 }
 
+#cookie
+#COOKIES_ENABLED = False#True，如果不禁用会使用默认header
+
 #robots.txt协议
 ROBOTSTXT_OBEY = False#True,此处不遵守robots协议
 
@@ -93,15 +96,15 @@ ROBOTSTXT_OBEY = False#True,此处不遵守robots协议
 
 # -----------------中间件等组件配置-------------------------
 
+SCHEDULER_PERSIST = True#持久化（关闭后可保存到磁盘，重启重新加载）
+
 SCHEDULER = "scrapy_redis.scheduler.Scheduler"#基于redis的调度器
 DUPEFILTER_CLASS = "scrapy_redis.dupefilter.RFPDupeFilter"#基于redis的url去重类
 SCHEDULER_QUEUE_CLASS = 'scrapy_redis.queue.PriorityQueue'#基于redis的优先级队列
-SCHEDULER_PERSIST = True#持久化（关闭后可保存到磁盘，重启重新加载）
-HTTPCACHE_STORAGE = 'scrapy_splash.SplashAwareFSCacheStorage'#基于splash的缓存
 
 # spider中间件
 SPIDER_MIDDLEWARES = {
-    #BASE
+    #SCRAPY
     #过滤掉不成功的请求（最好关闭，反爬措施会采取httpcode欺骗）
     'scrapy.spidermiddlewares.httperror.HttpErrorMiddleware': None,#50,禁用
     #过滤掉对其他域名的请求
@@ -112,15 +115,11 @@ SPIDER_MIDDLEWARES = {
     'scrapy.spidermiddlewares.urllength.UrlLengthMiddleware': 800,
     #设置爬取深度信息以及深度限制
     'scrapy.spidermiddlewares.depth.DepthMiddleware': 900,
-
-    #SPLASH
-    #磁盘缓存去重
-    'scrapy_splash.SplashDeduplicateArgsMiddleware': 100,
 }
 
 # downloader中间件
 DOWNLOADER_MIDDLEWARES = {
-    #BASE
+    #SCRAPY
     #robots.txt协议,不爬取Disallow规定禁止爬取的URL
     'scrapy.downloadermiddlewares.robotstxt.RobotsTxtMiddleware': None,#100,禁用
     #http基本身份认证,http://user:pass@domain.com,把用户名密码加密后的数据放入请求头
@@ -150,17 +149,15 @@ DOWNLOADER_MIDDLEWARES = {
     #HTTP缓存
     'scrapy.downloadermiddlewares.httpcache.HttpCacheMiddleware': 900,
 
-    #SPLASH
-    'scrapy_splash.SplashCookiesMiddleware': 723,
-    'scrapy_splash.SplashMiddleware': 725,
-
     #CUSTOM
     #动态UA
-    'myspider.middlewares.headers.DynamicHeaderMiddleware': 500,
+    'myspider.middlewares.myheader.MyHeaderMiddleware': 500,
     #添加此中间件不一定使用代理，是否使用代理在每个爬虫里自己设置
-    'myspider.middlewares.proxy.ProxyMiddleware': 510,
+    'myspider.middlewares.myproxy.MyProxyMiddleware': 750,
+    #自己选择下载器
+    'myspider.middlewares.mydownloader.MyDownloaderMiddleware': 755,
     #异常处理
-    'myspider.middlewares.exceptions.RequestFailMiddleware': 550,
+    'myspider.middlewares.myhandler.MyHandlerMiddleware': 760,
 }
 
 # pipelines管道
@@ -170,14 +167,13 @@ ITEM_PIPELINES = {
     'scrapy_redis.pipelines.RedisPipeline': 300,
 
     #CUSTOM
-    'myspider.pipelines.CommonPipeline.SavePipeline': 900,
+    'myspider.pipelines.mysave.MySavePipeline': 900,
 }
 
 # -------------------外部配置----------------------
 
 MASTER_HOST = cf.get('meta','masterhost')
 MASTER = cf.getboolean('meta','master')
-SPLASH_URL = cf.get('splash','url')
 
 # REDIS_URL恰好也是scrapy-redis的默认设置名称，爬虫启动后自动连接
 if MASTER:

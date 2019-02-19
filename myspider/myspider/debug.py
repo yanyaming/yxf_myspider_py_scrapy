@@ -17,7 +17,7 @@ scrapyd和爬虫测试阶段在本地，测试成功后移到远程。后续更�
 if __name__ == '__main__':
     r = redis.Redis(host=REDIS['host'], password=REDIS['password'], db=REDIS['db'])
 
-    # r.flushdb()
+    r.flushdb()
 
     # r.delete('fangchan_58_zufang:proxy_http')
     # r.delete('fangchan_58_zufang:proxy_https')

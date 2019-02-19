@@ -4,7 +4,7 @@ import pymongo
 from myspider.settings import DATABASE,DATABASE_URL
 
 
-class SavePipeline(object):
+class MySavePipeline(object):
     def __init__(self):
         self.client = pymongo.MongoClient(DATABASE_URL)
 

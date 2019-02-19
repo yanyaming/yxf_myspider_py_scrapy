@@ -3,7 +3,7 @@
 from scrapy.exceptions import DropItem
 
 
-class  MyspiderPipeline(object):
+class MyspiderPipeline(object):
     def __init__(self):
         self.ids_seen = set()
 

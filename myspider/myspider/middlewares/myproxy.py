@@ -23,7 +23,7 @@ redis_pool = redis.ConnectionPool(host=REDIS['host'], port=int(REDIS['port']), d
 
 
 #每次请求都从redis随机查询出一个代理IP，若有效代理过少则通过API更新代理数据，为每个爬虫单独维护代理池
-#代理IP必须使用高匿，http/https视情况而定
+#代理IP必须使用高匿，http/https根据url自动确定
 def _getRandomProxy(from_where,protocol,proxy_http,proxy_https):
     r = redis.StrictRedis(connection_pool=redis_pool)
     lenth1 = r.llen(proxy_http)
@@ -86,10 +86,10 @@ def _deleteUselessProxy(proxy,proxy_http,proxy_https):
         r.lrem(proxy_http,1,proxy)
     elif proxy.split('://')[0] == 'https':
         r.lrem(proxy_https,1,proxy)
-    print('-------------lrem:'+proxy)
+    print('ProxyMiddleware-------------lrem:'+proxy)
 
 
-class ProxyMiddleware(object):
+class MyProxyMiddleware(object):
 
     def process_request(self, request, spider):
         PROXY_ENABLE=spider.settings.get('PROXY_ENABLE',False)
@@ -115,7 +115,7 @@ class ProxyMiddleware(object):
                 request.meta['proxy_failed_times'] = 0
             # 更新代理使用次数
             request.meta['proxy_used_times'] += 1
-            print('-------------use proxy:'+str(request.meta['proxy']))
+            print('ProxyMiddleware-------------use proxy:'+str(request.meta['proxy']))
         else:
             pass
 
