@@ -9,8 +9,7 @@ import os
 import random
 
 '''
-ip，端口，类型(0高匿名，1透明)，protocol(0 http,1 https),country(国家),area(省市),updatetime(更新时间)
- speed(连接速度)
+ip，端口，类型(0高匿名，1透明)，protocol(0 http,1 https),country(国家),area(省市),updatetime(更新时间),speed(连接速度)
 '''
 parserList = [
     {

@@ -62,7 +62,7 @@ def _getRandomProxy(from_where,protocol,proxy_http,proxy_https):
             url = PROXY_SERVER['url']+'?'
             res1 = requests.get(url + '&count=20&types=0&protocol=0')
             time.sleep(1)
-            res2 = requests.get(url + '&count=20&types=0&protocol=2')
+            res2 = requests.get(url + '&count=20&types=0&protocol=1')
             for i in eval(res1.text):
                 r.lpush(proxy_http,prefix_http+i[0]+':'+str(i[1]))
             for i in eval(res2.text):

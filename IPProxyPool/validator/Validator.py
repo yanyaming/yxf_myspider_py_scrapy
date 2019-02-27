@@ -148,8 +148,13 @@ def _checkHttpProxy(selfip, proxies, isHttp=True):
             headers = content['headers']
             ip = content['origin']
             proxy_connection = headers.get('Proxy-Connection', None)
-            if ',' in ip:
-                types = 2
+            if ',' in ip:  # 此处修改逻辑漏洞：有些高匿代理虽然也是两个IP，但都是代理自己，是真的高匿
+                ip1 = ip.split(', ')[0]
+                ip2 = ip.split(', ')[1]
+                if ip1 == ip2:
+                    types = 0
+                else:
+                    types = 2
             elif proxy_connection:
                 types = 1
             else:
