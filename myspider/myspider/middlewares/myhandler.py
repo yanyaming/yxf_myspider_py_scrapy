@@ -4,13 +4,13 @@ import scrapy
 import traceback
 import time
 from scrapy import Selector
-from scrapy.http import HtmlResponse
+from scrapy.http import HtmlResponse,TextResponse
 from scrapy.exceptions import IgnoreRequest
 import smtplib  # python自带的邮件库
 from email.mime.text import MIMEText  # python自带的邮件库
 from email.header import Header  # python自带的邮件库
 from myspider.settings import EMAIL
-from myspider.downloaders import selenium,requests
+from myspider.downloaders import myselenium
 
 '''
 每次请求的异常处理，放行正确的请求与响应，对出错的请求选择重新加入队列或者丢弃
@@ -38,9 +38,11 @@ class MyHandlerMiddleware(object):
         PROXY_ENABLE = spider.settings.get('PROXY_ENABLE', False)
 
         if PROXY_ENABLE:
-            request.meta['proxy_failed_times'] += 1
-        spider.logger.info('RequestFailMiddleware----------downloader GET failed')
+            if 'proxy_failed_times' in request.meta:
+                request.meta['proxy_failed_times'] += 1
+        spider.logger.info('MyHandlerMiddleware----------downloader GET failed')
         return request.replace(dont_filter=True)  # 重新把请求加入队列并设置不被筛选掉
+        # raise exception
 
     # 截获爬虫中间件抛出的所有异常（响应阶段）
     def process_spider_exception(self, response, exception, spider):
@@ -48,7 +50,7 @@ class MyHandlerMiddleware(object):
 
         if PROXY_ENABLE:
             response.request.meta['proxy_failed_times'] += 1
-        spider.logger.info('RequestFailMiddleware----------spider GET failed')
+        spider.logger.info('MyHandlerMiddleware----------spider GET failed')
         # return response.request.replace(dont_filter=True)
         raise exception
 
@@ -56,10 +58,8 @@ class MyHandlerMiddleware(object):
     def process_response(self, request, response, spider):
         PROXY_ENABLE = spider.settings.get('PROXY_ENABLE', False)
         http_code = response.status
-        spider.logger.info(response.url)
-        spider.logger.info(response.headers)
-        spider.logger.info(request.headers)
-        spider.logger.info(response.text)
+        # spider.logger.info(response.url)
+        # spider.logger.info(response.body)
         pass
 
         #1xx请求未完成，需要放行
@@ -70,24 +70,24 @@ class MyHandlerMiddleware(object):
             return response
         #3xx重定向，爬虫正常不会出现304未改动重定向，会可能有302暂时重定向（反爬：验证码，空页面）；其他是失败请求，需要重新加入队列
         if http_code // 100 == 3 and http_code != 302:
-            spider.logger.info('RequestFailMiddleware----------status code:'+str(http_code))
+            spider.logger.info('MyHandlerMiddleware----------status code:'+str(http_code))
             if PROXY_ENABLE:
                 request.meta['proxy_failed_times'] += 1
             return request.replace(dont_filter=True)
         if http_code == 302:#无论是验证码页面还是空页面都是反爬措施，都需要使用非原生下载器
             if PROXY_ENABLE:
                 request.meta['proxy_failed_times'] += 1
-            spider.logger.info('RequestFailMiddleware----------status code:302')
+            spider.logger.info('MyHandlerMiddleware----------status code:302')
             if not self.browser:
-                self.browser = selenium.Chrome().load()
+                self.browser = myselenium.load_firefox(load_images=False,display=True)
             self.browser.get(response.request.url)
-            time.sleep(3)
-            response = HtmlResponse(url=self.browser.current_url,body=self.browser.page_source)
+            print(self.browser.page_source)
+            response = TextResponse(url=self.browser.current_url,body=self.browser.page_source)
             self.browser.close()
             return response
         #4xx找不到，可能有部分是反爬虫的误导，404是无效链接所以直接丢掉；其他需要重新加入队列
         if http_code // 100 == 4 and http_code != 404:
-            spider.logger.info('RequestFailMiddleware----------status code:'+str(http_code))
+            spider.logger.info('MyHandlerMiddleware----------status code:'+str(http_code))
             if PROXY_ENABLE:
                 request.meta['proxy_failed_times'] += 1
             return request.replace(dont_filter=True)
@@ -97,5 +97,5 @@ class MyHandlerMiddleware(object):
         if http_code // 100 == 5:
             if PROXY_ENABLE:
                 request.meta['proxy_failed_times'] += 1
-            spider.logger.info('RequestFailMiddleware----------status code:'+str(http_code))
+            spider.logger.info('MyHandlerMiddleware----------status code:'+str(http_code))
             return request.replace(dont_filter=True)

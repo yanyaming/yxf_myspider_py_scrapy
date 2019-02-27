@@ -58,51 +58,51 @@ class fangchan_anjuke_zufang_item(scrapy.Item):
     # info
     crawl_time = scrapy.Field()
 
-    def parse_listpage(self, response, iter):
+    def parse_listpage(self, response, ite):
         #编码
-        self.bianma = iter.css('.zu-itemmod .zu-info h3 a::attr(href)').extract_first().split('/')[-1]
+        self['bianma'] = ite.css('.zu-itemmod .zu-info h3 a::attr(href)').extract_first().split('/')[-1]
         #标题
-        self.biaoti = str(iter.css('.zu-itemmod .zu-info h3 a::attr(title)').extract_first())
+        self['biaoti'] = ite.css('.zu-itemmod .zu-info h3 a::attr(title)').extract_first()
         #图片（文件）
-        self.tupian = str(iter.css('.zu-itemmod .thumbnail::attr(src)').extract_first())
+        self['tupian'] = ite.css('.zu-itemmod .thumbnail::attr(src)').extract_first()
         #费用
-        self.feiyong = str(iter.css('.zu-itemmod .zu-side strong::text').extract_first())+str(iter.css('.zu-side p::text').extract())
+        self['feiyong'] = str(ite.css('.zu-itemmod .zu-side strong::text').extract_first())+str(ite.css('.zu-side p::text').extract())
         #地址
-        self.dizhi = str(response.css('.zu-itemmod .zu-info address::text').extract_first())
+        self['dizhi'] = response.css('.zu-itemmod .zu-info address::text').extract_first()
         #小区
-        self.xiaoqu = str(response.css('.zu-itemmod .zu-info address a::text').extract_first())
+        self['xiaoqu'] = response.css('.zu-itemmod .zu-info address a::text').extract_first()
         #户型
-        self.huxing = str(response.css('.zu-itemmod .zu-info').xpath('//*p[1]/text()[1]').extract_first())
+        self['huxing'] = response.css('.zu-itemmod .zu-info').xpath('./p[1]/text()[1]').extract_first()
         #面积
-        self.mianji = str(response.css('.zu-itemmod .zu-info').xpath('//*p[1]/text()[2]').extract_first())
+        self['mianji'] = response.css('.zu-itemmod .zu-info').xpath('./p[1]/text()[2]').extract_first()
         #楼层
-        self.louceng = str(response.css('.zu-itemmod .zu-info').xpath('//*p[1]/text()[3]').extract_first())
+        self['louceng'] = response.css('.zu-itemmod .zu-info').xpath('./p[1]/text()[3]').extract_first()
         #联系人
-        self.lianxiren = str(response.css('.zu-itemmod .zu-info').xpath('//*p[1]/text()[4]').extract_first())
+        self['lianxiren'] = response.css('.zu-itemmod .zu-info').xpath('./p[1]/text()[4]').extract_first()
         #租赁方式
-        self.zulinfangshi = str(response.css('.zu-itemmod .zu-info').xpath('//*p[2]/span[1]/text()').extract_first())
+        self['zulinfangshi'] = response.css('.zu-itemmod .zu-info').xpath('./p[2]/span[1]/text()').extract_first()
         #朝向
-        self.chaoxiang = str(response.css('.zu-itemmod .zu-info').xpath('//*p[2]/span[2]/text()').extract_first())
+        self['chaoxiang'] = response.css('.zu-itemmod .zu-info').xpath('./p[2]/span[2]/text()').extract_first()
         #附近地铁
-        self.fujinditie = str(response.css('.zu-itemmod .zu-info').xpath('//*p[2]/span[3]/text()').extract_first())
+        self['fujinditie'] = response.css('.zu-itemmod .zu-info').xpath('./p[2]/span[3]/text()').extract_first()
 
     def parse_detailpage(self, response):
         #装修程度
-        self.zhuangxiuchengdu = response.css('.house-info-zufang').xpath('//*li[6]/span[2]/text()').extract_first()
+        self['zhuangxiuchengdu'] = response.css('.house-info-zufang').xpath('./li[6]/span[2]/text()').extract_first()
         #住宅类型
-        self.zhuzhaileixing = response.css('.house-info-zufang').xpath('//*li[7]/span[2]/text()').extract_first()
+        self['zhuzhaileixing'] = response.css('.house-info-zufang').xpath('./li[7]/span[2]/text()').extract_first()
         #户型明细
-        self.huxingmingxi = response.css('.house-info-zufang').xpath('//*li[2]/span[2]/text()').extract_first()
+        self['huxingmingxi'] = response.css('.house-info-zufang').xpath('./li[2]/span[2]/text()').extract_first()
         #付款类型
-        self.fukuanleixing = response.css('.house-info-zufang').xpath('//*li[1]/span[2]/text()').extract_first()
+        self['fukuanleixing'] = response.css('.house-info-zufang').xpath('./li[1]/span[2]/text()').extract_first()
         #发布时间
-        self.fabushijian = response.css('.right-info::text').extract_first().split('发布时间：')[1]
+        self['fabushijian'] = response.css('.right-info::text').extract_first().split('发布时间：')[1]
         #房屋配套（列表）
-        self.fangwupeitao = response.css('.house-info-peitao .has div::text').extract()
+        self['fangwupeitao'] = response.css('.house-info-peitao .has div::text').extract()
         #房源概况（长文本）
-        self.fangyuangaikuang = response.css('.auto-general::text').extract_first()
+        self['fangyuangaikuang'] = response.css('.auto-general::text').extract_first()
         #小区问答（长文本）
-        self.xiaoquwenda = response.css('.comm-qa').xpath('//*text()').extract_first()
+        self['xiaoquwenda'] = response.css('.comm-qa').xpath('./text()').extract_first()
 
 
 class fangchan_anjuke_xinfang_item(scrapy.Item):

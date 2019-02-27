@@ -1,25 +1,44 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-import requests
-from myspider.downloaders import selenium
-from scrapy.http import HtmlResponse,Response,Request
+import time
+from scrapy.http import HtmlResponse,Response,Request,TextResponse
 from scrapy.exceptions import IgnoreRequest
+from myspider.downloaders import myselenium,myrequests
 
 
 class MyDownloaderMiddleware(object):
     browser = None
+    session = None
 
     def process_request(self, request, spider):
-        DOWNLOADER = spider.settings.get('DOWNLOADER', 'default')
-        response = None
+        CUSTOM_DOWNLOADER = spider.settings.get('CUSTOM_DOWNLOADER', 'default')
 
-        if DOWNLOADER == 'default':
-            pass
-        elif DOWNLOADER == 'requests':
-            response = requests.get(url=request.url,headers=request.headers)
-        elif DOWNLOADER == 'phantomjs':
-            pass
-        elif DOWNLOADER == 'chorme':
-            pass
-
-        return Response(url=request.url,status=response.status,headers=response.headers,body=response.body)
+        #1.使用scrapy默认下载器（容易被反爬）
+        if CUSTOM_DOWNLOADER == 'default':
+            return None
+        #2.使用requests（不执行js时的最佳下载器）
+        elif CUSTOM_DOWNLOADER == 'requests':
+            headers = {}#headers格式不兼容，需要转换
+            proxies = {}#若有代理则使用
+            for key,value in request.headers.items():
+                headers[key] = value[0]
+            if 'proxy' in request.meta:
+                proxy_url = request.meta['proxy'].decode('utf-8')
+                if proxy_url.split('://')[0] == 'http':
+                    proxies['http'] = proxy_url.split('://')[1]
+                elif proxy_url.split('://')[0] == 'https':
+                    proxies['https'] = proxy_url.split('://')[1]
+            response = myrequests.my_requests_request(method='get',url=request.url,headers=headers,
+                                                      proxies=proxies,allow_redirects=False)
+            # with open('page.html','wb+') as f:
+            #     f.write(response.content)
+            return TextResponse(url=request.url, status=response.status_code, headers=response.headers,
+                                body=response.content,request=request)
+        #3.使用selenium+chrome（模拟浏览器）
+        elif CUSTOM_DOWNLOADER == 'chrome':
+            self.browser = myselenium.load_firefox(load_images=False,display=True)
+            self.browser.get(request.url)
+            response = TextResponse(url=self.browser.current_url, body=self.browser.page_source)
+            self.browser.close()
+            return TextResponse(url=request.url,status=response.status,headers=response.headers,
+                                body=response.body,request=request)

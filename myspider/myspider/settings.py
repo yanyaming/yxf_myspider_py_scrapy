@@ -136,14 +136,14 @@ DOWNLOADER_MIDDLEWARES = {
     'scrapy.downloadermiddlewares.ajaxcrawl.AjaxCrawlMiddleware': 560,
     #处理head重定向
     'scrapy.downloadermiddlewares.redirect.MetaRefreshMiddleware': None,#580,禁用
+    #处理压缩传输
+    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': None,#590,与requests冲突，需要单独配置
     #处理body重定向
     'scrapy.downloadermiddlewares.redirect.RedirectMiddleware': None,#600,禁用
     #Cookie,CookieJar:对每个域名、每个爬虫单独设置（需要在每个爬虫代码里显式传递）
     'scrapy.downloadermiddlewares.cookies.CookiesMiddleware': 700,
     #网络代理,在Request对象的meta信息中加入代理信息，通过代理访问,http_proxy/https_proxy
     'scrapy.downloadermiddlewares.httpproxy.HttpProxyMiddleware': None,#750,重写
-    #处理压缩传输
-    'scrapy.downloadermiddlewares.httpcompression.HttpCompressionMiddleware': 810,#590,
     #状态信息
     'scrapy.downloadermiddlewares.stats.DownloaderStats': 850,
     #HTTP缓存
@@ -152,7 +152,7 @@ DOWNLOADER_MIDDLEWARES = {
     #CUSTOM
     #动态UA
     'myspider.middlewares.myheader.MyHeaderMiddleware': 500,
-    #添加此中间件不一定使用代理，是否使用代理在每个爬虫里自己设置
+    #代理
     'myspider.middlewares.myproxy.MyProxyMiddleware': 750,
     #自己选择下载器
     'myspider.middlewares.mydownloader.MyDownloaderMiddleware': 755,

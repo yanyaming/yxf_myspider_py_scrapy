@@ -78,6 +78,16 @@ yxf_myspider_py_scrapy/requirments.txt
 	查询API服务由谁来提供？master-webserver（且设计成RESTfulAPI模式）。
 	最终展现由谁来提供？mysite的爬虫子应用，前端用highcharts，直接调用master-webserver的API。
 
+### BUG汇总
+
+selenium加载webdriver-chromedriver时，找不到可执行文件？  
+
+    chrome需要再安装浏览器，而centos下的chrome浏览器需要许多依赖，不好安装，弃用。  
+    
+selenium加载webdriver-firefoxdriver时，"connection refused"？  
+
+    首先检查firefox的driver文件是否有足够权限，然后检查firefox浏览器的版本是否足够高，升级版本。  
+
 ## 部署
 
 Master——scrapyd爬虫服务，redis队列，postgresql数据库，web.py网站API服务  
