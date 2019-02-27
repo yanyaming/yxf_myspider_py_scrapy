@@ -30,15 +30,16 @@ class MyDownloaderMiddleware(object):
                     proxies['https'] = proxy_url.split('://')[1]
             response = myrequests.my_requests_request(method='get',url=request.url,headers=headers,
                                                       proxies=proxies,allow_redirects=False)
-            # with open('page.html','wb+') as f:
-            #     f.write(response.content)
             return TextResponse(url=request.url, status=response.status_code, headers=response.headers,
-                                body=response.content,request=request)
+                                body=response.content,request=request)  # content是utf-8编码形式
         #3.使用selenium（模拟浏览器）
         elif CUSTOM_DOWNLOADER == 'selenium':
-            self.browser = myselenium.load_firefox(load_images=False,display=True)
+            if 'proxy' in request.meta:
+                self.browser = myselenium.load_firefox(load_images=False,display=True, proxy=request.meta['proxy'].decode('utf-8'))
+            else:
+                self.browser = myselenium.load_firefox(load_images=False, display=True)
             self.browser.get(request.url)
-            response = TextResponse(url=self.browser.current_url, body=self.browser.page_source)
+            res = TextResponse(url=self.browser.current_url, body=self.browser.page_source)  # page_source是纯文本形式
             self.browser.close()
-            return TextResponse(url=request.url,status=response.status,headers=response.headers,
-                                body=response.body,request=request)
+            return TextResponse(url=request.url,status=200,headers=request.headers,
+                                body=res.body,request=request)

@@ -6,28 +6,11 @@ import time
 from scrapy import Selector
 from scrapy.http import HtmlResponse,TextResponse
 from scrapy.exceptions import IgnoreRequest
-import smtplib  # python自带的邮件库
-from email.mime.text import MIMEText  # python自带的邮件库
-from email.header import Header  # python自带的邮件库
-from myspider.settings import EMAIL
 from myspider.downloaders import myselenium
 
 '''
 每次请求的异常处理，放行正确的请求与响应，对出错的请求选择重新加入队列或者丢弃
 '''
-
-
-# 邮件通知
-def send_email():
-    #login
-    server = smtplib.SMTP(EMAIL["SMTPserver"], EMAIL["port"])
-    server.login(EMAIL["address"], EMAIL["password"])
-    #send email
-    msg = MIMEText('爬虫Master被封警告！请求解封！', 'plain', 'utf-8')
-    msg['From'] = EMAIL["from"]
-    msg['Subject'] = Header('爬虫被封禁警告！', 'utf8').encode()
-    msg['To'] = EMAIL["to"]
-    server.sendmail(msg['From'], [msg['To']], msg.as_string())
 
 
 class MyHandlerMiddleware(object):
@@ -58,9 +41,6 @@ class MyHandlerMiddleware(object):
     def process_response(self, request, response, spider):
         PROXY_ENABLE = spider.settings.get('PROXY_ENABLE', False)
         http_code = response.status
-        # spider.logger.info(response.url)
-        # spider.logger.info(response.body)
-        pass
 
         #1xx请求未完成，需要放行
         if http_code // 100 == 1:
@@ -79,12 +59,15 @@ class MyHandlerMiddleware(object):
                 request.meta['proxy_failed_times'] += 1
             spider.logger.info('MyHandlerMiddleware----------status code:302')
             if not self.browser:
-                self.browser = myselenium.load_firefox(load_images=False,display=True)
-            self.browser.get(response.request.url)
-            print(self.browser.page_source)
-            response = TextResponse(url=self.browser.current_url,body=self.browser.page_source)
-            self.browser.close()
-            return response
+                if PROXY_ENABLE:
+                    self.browser = myselenium.load_firefox(load_images=False, display=True, proxy=request.meta['proxy'].decode('utf-8'))
+                else:
+                    self.browser = myselenium.load_firefox(load_images=False,display=True)
+            self.browser.get(request.url)
+            res = TextResponse(url=self.browser.current_url,body=bytes(self.browser.page_source,encoding='utf-8'))
+            # self.browser.close()
+            return TextResponse(url=request.url, status=200, headers=response.headers,
+                                body=res.body, request=request)
         #4xx找不到，可能有部分是反爬虫的误导，404是无效链接所以直接丢掉；其他需要重新加入队列
         if http_code // 100 == 4 and http_code != 404:
             spider.logger.info('MyHandlerMiddleware----------status code:'+str(http_code))

@@ -26,7 +26,7 @@ if __name__ == '__main__':
         'Connection': 'keep-alive',
         'Accept-Encoding': 'gzip, deflate',
     }
-    proxies = {"http": "http://101.248.64.72:80",}
+    proxies = {"http": "http://134.119.205.248:8080",}
     r = requests.get(url=test_url, headers=headers, timeout=5, proxies=proxies)
     if r.ok:
         content = json.loads(r.text)
@@ -35,7 +35,12 @@ if __name__ == '__main__':
         ip = content['origin']
         proxy_connection = headers.get('Proxy-Connection', None)
         if ',' in ip:
-            types = 2
+            ip1 = ip.split(', ')[0]
+            ip2 = ip.split(', ')[1]
+            if ip1 == ip2:
+                types = 0
+            else:
+                types = 2
         elif proxy_connection:
             types = 1
         else:

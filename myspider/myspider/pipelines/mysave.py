@@ -10,6 +10,7 @@ class MySavePipeline(object):
 
     def process_item(self, item, spider):
         data = dict(item)
+        spider.logger.info('MySavePipeline----------item:' + str(data))
         db = self.client[DATABASE['db']]
         co = db[spider.name]
         co.insert_one(data)

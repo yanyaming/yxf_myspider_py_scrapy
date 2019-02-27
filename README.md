@@ -21,13 +21,9 @@ python==3.6.x
 
 pip>=18.x  
 
-postgresql  
-
 mongodb  
 
 redis  
-
-docker-splash  
 
 java-elasticsearch
 
@@ -37,15 +33,11 @@ yxf_myspider_py_scrapy/requirments.txt
 
 分布式队列存储服务器-VPS：redis([http://iotec.cc:6379])  
 
-关系数据存储服务器-VPS：postgresql([http://iotec.cc:5432])  
-
 非关系数据存储服务器-VPS：mongodb([http://iotec.cc:27017])  
 
-代理IP服务器-VPS：IPProxyPool([http://iotec.cc:8001])  （别人的原项目：[https://github.com/qiyeboy/IPProxyPool]）  
+代理IP服务器-本地：IPProxyPool([http://localhost:8001])  （别人的原项目：[https://github.com/qiyeboy/IPProxyPool]）  
 
-爬虫管理服务器-VPS：scrapyd([http://iotec.cc:6800])  
-
-下载服务器-本地：splash([http://localhost:8050])  
+爬虫管理服务器-本地：scrapyd([http://iotec.cc:6800])  
 
 工作服务器-本地：scrapy(myspider)  
 

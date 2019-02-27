@@ -14,6 +14,7 @@ from myspider.items.FangchanItem import *
 '''
 
 
+#1
 class fangchan_anjuke_zufang_spider(RedisSpider):
     name = 'fangchan_anjuke_zufang'
     custom_settings = {
@@ -29,8 +30,7 @@ class fangchan_anjuke_zufang_spider(RedisSpider):
         for ite in list_content:
             item = fangchan_anjuke_zufang_item()
             item.parse_listpage(response, ite)
-            print(response.css('.zu-itemmod div::attr(link)').extract_first())
-            url_detailpage=response.css('.zu-itemmod div::attr(link)').extract_first()
+            url_detailpage=response.css('.zu-itemmod::attr(link)').extract_first()
             # 发出爬取项目详情页请求
             yield Request(url=url_detailpage, callback=self.parsedetail, meta={'data': item})
         url_nextpage=response.css('.aNxt::attr(href)').extract_first()
@@ -45,6 +45,7 @@ class fangchan_anjuke_zufang_spider(RedisSpider):
         yield item
 
 
+#4
 class fangchan_fangtianxia_zufang_spider(RedisSpider):
     name = 'fangchan_fangtianxia_zufang'
     custom_settings = {
@@ -52,55 +53,49 @@ class fangchan_fangtianxia_zufang_spider(RedisSpider):
         'PROXY_MAX_USE': 10,
         'PROXY_FROM_WHERE': 'server',
         'HEADER_STATIC':True,
+        'CUSTOM_DOWNLOADER':'requests',
     }
-    browser = None
-    SPLASH_URL = 'http://localhost:8050/render.html?sort_keys=True&timeout=30&wait=5&images=0'  # images=0不加载图片
-
-    def make_requests_from_url(self, url):
-        return SplashRequest(url, endpoint='render.html', callback=self.parse, dont_filter=True)
 
     def parse(self, response):
         list_content = response.css('.list-content .zu-itemmod')
-        for i in list_content:
+        for ite in list_content:
             item = fangchan_fangtianxia_zufang_item()
-            item.parse_listpage(response, i)
-            url_detailpage = response.css('.zu-itemmod div::attr(link)').extract_first()
-            yield SplashRequest(url=url_detailpage, endpoint='render.html', callback=self.parsedetail, meta={'data': item})
+            item.parse_listpage(response, ite)
+            url_detailpage = response.css('.zu-itemmod::attr(link)').extract_first()
+            yield Request(url=url_detailpage, callback=self.parsedetail, meta={'data': item})
         url_nextpage = response.css('.aNxt::attr(href)').extract_first()
-        yield SplashRequest(url=url_nextpage, endpoint='render.html', callback=self.parse)
+        yield Request(url=url_nextpage, callback=self.parse)
 
     def parsedetail(self, response):
         item = fangchan_fangtianxia_zufang_item()
         item.parse_detailpage(response)
-        print('----------------------'+str(item))
+        item['crawl_time'] = datetime.datetime.today()
         yield item
 
 
-class fangchan_58_zufang_spider(RedisSpider):
-    name = 'fangchan_58_zufang'
+#7
+class fangchan_wubatongcheng_zufang_spider(RedisSpider):
+    name = 'fangchan_wubatongcheng_zufang'
     custom_settings = {
-        'PROXY_ENABLE':True,
+        'PROXY_ENABLE': True,
         'PROXY_MAX_USE': 10,
         'PROXY_FROM_WHERE': 'server',
-        'HEADER_STATIC': True,
+        'HEADER_STATIC':True,
+        'CUSTOM_DOWNLOADER':'requests',
     }
-    browser = None
 
     def parse(self, response):
         list_content = response.css('.list-content .zu-itemmod')
-        for i in list_content:
+        for ite in list_content:
             item = fangchan_wubatongcheng_zufang_item()
-            item['bianma'] = i.css('.zu-itemmod .zu-info h3 a::attr(href)').extract_first().split('/')[-1]
-            item.parse_listpage(response, i)
-            url_detailpage = response.css('.zu-itemmod div::attr(link)').extract_first()
-            print('----------------------' + str(item))
-            yield scrapy.Request(url=url_detailpage, callback=self.parsedetail)
-            yield item
+            item.parse_listpage(response, ite)
+            url_detailpage = response.css('.zu-itemmod::attr(link)').extract_first()
+            yield Request(url=url_detailpage, callback=self.parsedetail, meta={'data': item})
         url_nextpage = response.css('.aNxt::attr(href)').extract_first()
-        yield scrapy.Request(url=url_nextpage)
+        yield Request(url=url_nextpage)
 
     def parsedetail(self, response):
         item = fangchan_wubatongcheng_zufang_item()
         item.parse_detailpage(response)
-        print('----------------------' + str(item))
+        item['crawl_time'] = datetime.datetime.today()
         yield item

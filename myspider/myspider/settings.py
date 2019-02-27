@@ -217,12 +217,3 @@ PROXY_API = {
 PROXY_SERVER = {
     'url':cf.get('proxyserver','url'),
 }
-
-EMAIL = {
-    'SMTPserver':cf.get("email","SMTPserver"),
-    'port':cf.getint("email","port"),
-    'address':cf.get("email","address"),
-    'password':cf.get("email","password"),
-    'from':cf.get("email","from"),
-    'to':cf.get("email","to"),
-}

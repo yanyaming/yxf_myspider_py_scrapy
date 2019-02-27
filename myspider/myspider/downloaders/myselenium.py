@@ -4,6 +4,7 @@ import os
 from myspider.settings import BASE_DIR
 from selenium import common
 from selenium import webdriver
+from selenium.webdriver.common.proxy import *
 
 '''
 用于css/js渲染、访问附带文件、执行浏览器操作。
@@ -13,7 +14,7 @@ chromedriver还要额外安装chrome浏览器，麻烦，不用。
 '''
 
 
-def load_firefox(load_images=True, display=True):
+def load_firefox(load_images=True, display=True, proxy=''):
     firefox_profile = webdriver.FirefoxProfile()
     firefox_options = webdriver.FirefoxOptions()
     if not display:  # 不显示界面
@@ -23,6 +24,16 @@ def load_firefox(load_images=True, display=True):
     if not load_images:  # 不加载图片
         firefox_profile.set_preference('browser.migration.version', 9001)
         firefox_profile.set_preference('permissions.default.image', 2)
+    else:
+        pass
+    if proxy:
+        proxy_ip = proxy.split('://')[1].split(':')[0]
+        proxy_port = int(proxy.split('://')[1].split(':')[1])
+        firefox_profile.set_preference("network.proxy.type", 1)  # 是否启用代理,1启用
+        firefox_profile.set_preference("network.proxy.http", proxy_ip)
+        firefox_profile.set_preference("network.proxy.http_port", proxy_port)
+        firefox_profile.set_preference("network.proxy.share_proxy_settings", False)  # 是否全局共享,False不共享
+        firefox_profile.set_preference("network.proxy.no_proxies_on", "localhost")  # 例外
     else:
         pass
     browser = webdriver.Firefox(
