@@ -1,11 +1,9 @@
 scrapy==1.5.1
 scrapyd
 scrapyd-client
-psycopg2
 pymongo
 redis
 scrapy-redis
-scrapy-splash
 requests
 bs4
 lxml

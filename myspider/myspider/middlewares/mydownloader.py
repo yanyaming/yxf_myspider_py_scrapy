@@ -34,8 +34,8 @@ class MyDownloaderMiddleware(object):
             #     f.write(response.content)
             return TextResponse(url=request.url, status=response.status_code, headers=response.headers,
                                 body=response.content,request=request)
-        #3.使用selenium+chrome（模拟浏览器）
-        elif CUSTOM_DOWNLOADER == 'chrome':
+        #3.使用selenium（模拟浏览器）
+        elif CUSTOM_DOWNLOADER == 'selenium':
             self.browser = myselenium.load_firefox(load_images=False,display=True)
             self.browser.get(request.url)
             response = TextResponse(url=self.browser.current_url, body=self.browser.page_source)
