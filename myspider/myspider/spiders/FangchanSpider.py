@@ -41,7 +41,7 @@ class fangchan_anjuke_zufang_spider(RedisSpider):
     def parsedetail(self, response):
         item = response.meta['data']  #把之前的未完成爬取结果传递过来继续补充完整
         item.parse_detailpage(response)
-        item['crawl_time'] = datetime.datetime.today()
+        item['crawl_time'] = datetime.datetime.today().strftime('%Y-%m-%d')
         yield item
 
 
@@ -69,7 +69,7 @@ class fangchan_fangtianxia_zufang_spider(RedisSpider):
     def parsedetail(self, response):
         item = fangchan_fangtianxia_zufang_item()
         item.parse_detailpage(response)
-        item['crawl_time'] = datetime.datetime.today()
+        item['crawl_time'] = datetime.datetime.today().strftime('%Y-%m-%d')
         yield item
 
 
@@ -97,5 +97,5 @@ class fangchan_wubatongcheng_zufang_spider(RedisSpider):
     def parsedetail(self, response):
         item = fangchan_wubatongcheng_zufang_item()
         item.parse_detailpage(response)
-        item['crawl_time'] = datetime.datetime.today()
+        item['crawl_time'] = datetime.datetime.today().strftime('%Y-%m-%d')
         yield item

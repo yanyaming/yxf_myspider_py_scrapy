@@ -16,7 +16,13 @@ cd ./scrapyd
 nohup python3 /usr/local/python3/bin/scrapyd > scrapyd.log 2>&1 &
 cd ..
 
+#web
+cd ./webserver
+nohup python3 webserver.py > webserver.log 2>&1 &
+cd ..
+
 echo "server is running in background(slaver)"
 echo "ipproxypool:port=8001(public)"
 echo "scrapyd:port=6800(public)"
+echo "webserver:port=8080(public)"
 exit 0
