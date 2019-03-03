@@ -17,7 +17,7 @@ scrapyd和爬虫测试阶段在本地，测试成功后移到远程。后续更�
 if __name__ == '__main__':
     r = redis.Redis(host=REDIS['host'], password=REDIS['password'], db=REDIS['db'])
 
-    r.flushdb()
+    # r.flushdb()
 
     # r.delete('fangchan_58_zufang:proxy_http')
     # r.delete('fangchan_58_zufang:proxy_https')
@@ -29,7 +29,7 @@ if __name__ == '__main__':
     # r.lpush('fangchan_fangtianxia_zufang:start_urls', 'http://wuxi.zu.fang.com/')
     # execute(['scrapy', 'crawl', 'fangchan_fangtianxia_zufang'])
     #
-    r.delete('fangchan_anjuke_zufang:proxy_http')
-    r.delete('fangchan_anjuke_zufang:proxy_https')
-    r.lpush('fangchan_anjuke_zufang:start_urls', 'https://wx.zu.anjuke.com/')
+    # r.delete('fangchan_anjuke_zufang:proxy_http')
+    # r.delete('fangchan_anjuke_zufang:proxy_https')
+    # r.lpush('fangchan_anjuke_zufang:start_urls', 'https://wx.zu.anjuke.com/')
     execute(['scrapy', 'crawl', 'fangchan_anjuke_zufang'])

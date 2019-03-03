@@ -80,6 +80,11 @@ selenium加载webdriver-firefoxdriver时，"connection refused"？
 
     首先检查firefox的driver文件是否有足够权限，然后检查firefox浏览器的版本是否足够高，升级版本。  
 
+爬虫中断运行时当前未完成的请求丢失？  
+
+    采用外部下载器的代码用try-except抛出DontCloseSpider异常，然后在异常处理代码中统一重新发出请求。
+    但单个爬虫实例请求队列只有一条单线，很容易宕机，可使用scrapyd同时运行多个爬虫实例，多流水线爬取。
+
 ## 部署
 
 Master——scrapyd爬虫服务，redis队列，postgresql数据库，web.py网站API服务  

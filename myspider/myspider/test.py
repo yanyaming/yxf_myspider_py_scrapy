@@ -3,6 +3,7 @@
 from scrapy.cmdline import execute
 import sys
 import os
+import chardet
 import requests
 import redis
 import pymongo
@@ -13,44 +14,6 @@ sys.path.append(os.path.dirname(os.path.abspath(__file__)))
 from myspider.settings import REDIS,REDIS_URL,DATABASE,DATABASE_URL
 
 if __name__ == '__main__':
-    r = redis.StrictRedis(host=REDIS['host'], port=int(REDIS['port']), db=int(REDIS['db']), password=REDIS['password'])
-    m_client = pymongo.MongoClient(DATABASE_URL)
-    m_db = m_client[DATABASE['db']]
-
-    result = {'redis': [], 'mongodb': []}
-    spiders = set()
-
-    for k in r.keys('*'):
-        r_query_k = str(k, encoding='utf-8')
-        spiders.add(r_query_k.split(':')[0])
-        r_query_type = str(r.type(k), encoding='utf-8')
-        if r_query_k.split(':')[1] == 'dupefilter':
-            r_query_count = str(r.scard(k))
-            r_query_example = str(r.srandmember(k, 1)[0],encoding='utf-8')
-        else:
-            r_query_count = str(r.llen(k))
-            r_query_example = str(r.lrange(k, 0, 0)[0],encoding='utf-8')
-        result['redis'].append({
-            r_query_k: {
-                'type': r_query_type,
-                'count': r_query_count,
-                'example': r_query_example,
-            }
-        })
-
-    for s in spiders:
-        m_co = m_db[s]
-        m_query_count = str(m_co.count())
-        m_query_one = m_co.find()[0]
-        m_query_one['_id'] = str(m_query_one['_id'])
-        m_query_one['crawl_time'] = str(m_query_one['crawl_time'])
-        result['mongodb'].append({
-            s: {
-                'count': m_query_count,
-                'example': m_query_one,
-            }
-        })
-
-    json_result = json.dumps(result, ensure_ascii=False)
-    print(result)
-    print(json_result)
+    bi = bytes(r'\x80\x04\x95\x08\x03\x00\x00\x00\x00\x00\x00}\x94(\x8C\x03url\x94\x8C,https://wx.zu.anjuke.com/fangyuan/1283533047\x94\x8C\x08callback\x94\x8C\x0Bparsedetail\x94\x8C\x07errback\x94N\x8C\x06method\x94\x8C\x03GET\x94\x8C\x07headers\x94}\x94C\x07Referer\x94]\x94C%https://wx.zu.anjuke.com/fangyuan/p3/\x94as\x8C\x04body\x94C\x00\x94\x8C\x07cookies\x94}\x94\x8C\x04meta\x94}\x94(\x8C\x04data\x94\x8C\x1Bmyspider.items.FangchanItem\x94\x8C\x1Bfangchan_anjuke_zufang_item\x94\x93\x94)\x81\x94}\x94\x8C\x07_values\x94}\x94(\x8C\x06bianma\x94\x8C\x0A1283533047\x94\x8C\x08chengshi\x94\x8C\x01N\x94\x8C\x06biaoti\x94\x8C5\xE9\xA6\x99\xE5\xA2\x85\xE4\xBD\xB3\xE8\x8B\x91 \xE7\xB2\xBE\xE8\xA3\x85\xE4\xB8\xA4\xE6\x88\xBF \xE5\xAE\xB6\xE7\x94\xB5\xE9\xBD\x90\xE5\x85\xA8 \xE9\xA6\x96 \xE6\xAC\xA1 \xE5\x87\xBA\xE7\xA7\x9F\x94\x8C\x06tupian\x94\x8CThttps://pic1.ajkimg.com/display/hj/04abdb935eb3382e18d17374cb8ef994/240x180m.jpg?t=1\x94\x8C\x07feiyong\x94\x8C\x0C2200 \xE5\x85\x83/\xE6\x9C\x88\x94\x8C\x05dizhi\x94\x8C\x00\x94\x8C\x06xiaoqu\x94\x8C\x0C\xE9\xA6\x99\xE5\xA2\x85\xE5\x98\x89\xE8\x8B\x91\x94\x8C\x06huxing\x94\x8C\x082\xE5\xAE\xA41\xE5\x8E\x85\x94\x8C\x06mianji\x94\x8C\x0889\xE5\xB9\xB3\xE7\xB1\xB3\x94\x8C\x07louceng\x94\x8C\x075/12\xE5\xB1\x82\x94\x8C\x09lianxiren\x94\x8C\x09\xE9\x83\xAD\xE4\xB8\xAD\xE4\xBA\x9A\x94\x8C\x0Czulinfangshi\x94\x8C\x06\xE6\x95\xB4\xE7\xA7\x9F\x94\x8C\x09chaoxiang\x94\x8C\x06\xE6\x9C\x9D\xE5\x8D\x97\x94\x8C\x0Afujinditie\x94\x8C\x072\xE5\x8F\xB7\xE7\xBA\xBF\x94usb\x8C\x05depth\x94K\x03u\x8C\x09_encoding\x94\x8C\x05utf-8\x94\x8C\x08priority\x94K\x00\x8C\x0Bdont_filter\x94\x89\x8C\x05flags\x94]\x94u.',encoding='ascii')
+    print(chardet.detect(bi))
+    print(str(bi,encoding='ascii'))

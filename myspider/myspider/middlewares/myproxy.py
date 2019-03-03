@@ -86,7 +86,6 @@ def _deleteUselessProxy(proxy,proxy_http,proxy_https):
         r.lrem(proxy_http,1,proxy)
     elif proxy.split('://')[0] == 'https':
         r.lrem(proxy_https,1,proxy)
-    print('ProxyMiddleware-------------lrem:'+proxy)
 
 
 class MyProxyMiddleware(object):
@@ -115,7 +114,7 @@ class MyProxyMiddleware(object):
                 request.meta['proxy_failed_times'] = 0
             # 更新代理使用次数
             request.meta['proxy_used_times'] += 1
-            print('ProxyMiddleware-------------use proxy:'+str(request.meta['proxy']))
+            spider.logger.info('ProxyMiddleware-------------use proxy:'+str(request.meta['proxy']))
         else:
             pass
 

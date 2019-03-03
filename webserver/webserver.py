@@ -13,6 +13,7 @@ from loadenv import *
 
 urls = (
     '/', 'index',
+    '/stats', 'stats',
     '/api', 'api',
 )
 
@@ -20,29 +21,77 @@ urls = (
 class index(object):
     def GET(self):
         inputs = web.input()  # query:?type=1&name=admin;storage:{'type': u'1', 'name': u'admin'}
+        page = '''
+        <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Scrapyd</title>
+        </head>
+        <body>
+            <h1>Jobs</h1>
+            <p><a href='..'>Go back</a></p>
+            <table border='1'>
+                <tr>
+                    <th>Project</th>
+                    <th>Spider</th>
+                    <th>Job</th>
+                    <th>PID</th>
+                    <th>Start</th>
+                    <th>Runtime</th>
+                    <th>Finish</th>
+                    <th>Log</th>
+                </tr>
+                <tr>
+                    <th colspan='8' style='background-color: #ddd'>Pending</th>
+                </tr>
+                <tr>
+                    <th colspan='8' style='background-color: #ddd'>Running</th>
+                </tr>
+                <tr>
+                    <th colspan='8' style='background-color: #ddd'>Finished</th>
+                </tr>
+            </table>
+        </body>
+        </html>
+        '''
+        index = web.template.render(page)
+        return index
+
+
+class stats(object):
+    def GET(self):
+        inputs = web.input()
         r = redis.StrictRedis(host=REDIS['host'], port=int(REDIS['port']), db=int(REDIS['db']),password=REDIS['password'])
         m_client = pymongo.MongoClient(DATABASE_URL)
         m_db = m_client[DATABASE['db']]
-        result = {'redis': [], 'mongodb': []}
+        result = {'redis': [], 'mongodb': [], 'crawler': []}
         spiders = set()
 
         for k in r.keys('*'):
             r_query_k = str(k, encoding='utf-8')
-            spiders.add(r_query_k.split(':')[0])
+            if r_query_k != 'crawler':
+                spiders.add(r_query_k.split(':')[0])
             r_query_type = str(r.type(k), encoding='utf-8')
-            if r_query_k.split(':')[1] == 'dupefilter':
-                r_query_count = str(r.scard(k))
-                r_query_example = str(r.srandmember(k,1)[0],encoding='utf-8')
-            else:
-                r_query_count = str(r.llen(k))
-                r_query_example = str(r.lrange(k, 0, 0)[0],encoding='utf-8')
-            result['redis'].append({
-                r_query_k: {
-                    'type': r_query_type,
-                    'count': r_query_count,
-                    'example': r_query_example,
-                }
-            })
+            if r_query_k != 'crawler':
+                if r_query_k.split(':')[1] == 'dupefilter':
+                    r_query_count = str(r.scard(k))
+                    r_query_example = str(r.srandmember(k,1)[0],encoding='utf-8')
+                elif r_query_k.split(':')[1] == 'requests':
+                    r_query_count = str(r.zcard(k))
+                    r_query_example = str(r.zrange(k,0,1000)[0])
+                else:
+                    r_query_count = str(r.llen(k))
+                    r_query_example = str(r.lrange(k, 0, 0)[0],encoding='utf-8')
+                result['redis'].append({
+                    r_query_k: {
+                        'type': r_query_type,
+                        'count': r_query_count,
+                        'example': r_query_example,
+                    }
+                })
+            elif r_query_k == 'crawler':
+                for k in r.hgetall(b'crawler'):
+                    result['crawler'].append({str(k,encoding='utf-8'): str(r.hget(b'crawler',k),encoding='utf-8')})
 
         for s in spiders:
             m_co = m_db[s]

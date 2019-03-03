@@ -27,15 +27,15 @@ class fangchan_anjuke_zufang_spider(RedisSpider):
 
     def parse(self, response):
         list_content = response.css('.list-content .zu-itemmod')
+        url_nextpage = response.css('.aNxt::attr(href)').extract_first()
+        # 发出爬取下一页列表请求
+        yield Request(url=url_nextpage, callback=self.parse)
         for ite in list_content:
             item = fangchan_anjuke_zufang_item()
             item.parse_listpage(response, ite)
             url_detailpage=response.css('.zu-itemmod::attr(link)').extract_first()
             # 发出爬取项目详情页请求
             yield Request(url=url_detailpage, callback=self.parsedetail, meta={'data': item})
-        url_nextpage=response.css('.aNxt::attr(href)').extract_first()
-        # 发出爬取下一页列表请求
-        yield Request(url=url_nextpage, callback=self.parse)
 
     # callback回调链可在一个爬虫里递进深入爬取
     def parsedetail(self, response):
@@ -58,13 +58,13 @@ class fangchan_fangtianxia_zufang_spider(RedisSpider):
 
     def parse(self, response):
         list_content = response.css('.list-content .zu-itemmod')
+        url_nextpage = response.css('.aNxt::attr(href)').extract_first()
+        yield Request(url=url_nextpage, callback=self.parse)
         for ite in list_content:
             item = fangchan_fangtianxia_zufang_item()
             item.parse_listpage(response, ite)
             url_detailpage = response.css('.zu-itemmod::attr(link)').extract_first()
             yield Request(url=url_detailpage, callback=self.parsedetail, meta={'data': item})
-        url_nextpage = response.css('.aNxt::attr(href)').extract_first()
-        yield Request(url=url_nextpage, callback=self.parse)
 
     def parsedetail(self, response):
         item = fangchan_fangtianxia_zufang_item()
