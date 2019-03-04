@@ -3,10 +3,29 @@
 import scrapy
 
 
-class A51jobSpider(scrapy.Spider):
-    name = '51job'
-    allowed_domains = ['51job.com']
-    start_urls = ['http://51job.com/']
+class zhaopin_qianchengwuyou(scrapy.Spider):
+    name = 'zhaopin_qianchengwuyou'
+
+    def parse(self, response):
+        pass
+
+
+class zhaopin_zhilianzhaopin(scrapy.Spider):
+    name = 'zhaopin_zhilianzhaopin'
+
+    def parse(self, response):
+        pass
+
+
+class zhaopin_lagouwang(scrapy.Spider):
+    name = 'zhaopin_lagouwang'
+
+    def parse(self, response):
+        pass
+
+
+class zhaopin_bosszhipin(scrapy.Spider):
+    name = 'zhaopin_bosszhipin'
 
     def parse(self, response):
         pass

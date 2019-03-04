@@ -3,16 +3,16 @@
 import os
 import configparser
 cf = configparser.ConfigParser()
-cf.read(os.path.join(os.path.dirname(os.path.dirname(os.path.abspath(__file__))),"settings.cfg"))
+cf.read(os.path.join(os.path.dirname(os.path.abspath(__file__)),"settings.cfg"))
 
 # 项目名称
 BOT_NAME = 'myspider'
 # 项目模块
 SPIDER_MODULES = ['myspider.spiders']
 NEWSPIDER_MODULE = 'myspider.spiders'
-BASE_DIR = '/opt/yxf_myspider_py_scrapy'
 # 代码模板路径，使用startproject命令创建新项目时使用
 # TEMPLATES_DIR='templates'
+BASE_DIR = '/opt/yxf_myspider_py_scrapy'
 
 # -----------------速率配置--------------------
 
@@ -172,48 +172,4 @@ ITEM_PIPELINES = {
 
 # -------------------外部配置----------------------
 
-MASTER_HOST = cf.get('meta','masterhost')
-MASTER = cf.getboolean('meta','master')
-
-# REDIS_URL恰好也是scrapy-redis的默认设置名称，爬虫启动后自动连接
-if MASTER:
-    REDIS_URL = cf.get('redis-master','url')
-    REDIS = {
-        'host':cf.get('redis-master','host'),
-        'port':cf.get('redis-master','port'),
-        'password':cf.get('redis-master','password'),
-        'db':cf.get('redis-master','db'),
-    }
-    DATABASE = {
-        'host': cf.get('db-master', 'host'),
-        'port': cf.get('db-master', 'port'),
-        'user': cf.get('db-master', 'user'),
-        'password': cf.get('db-master', 'password'),
-        'db': cf.get('db-master', 'db'),
-    }
-    DATABASE_URL = cf.get('db-master','url')
-else:
-    REDIS_URL = cf.get('redis-slaver','url')
-    REDIS = {
-        'host':cf.get('redis-slaver','host'),
-        'port':cf.get('redis-slaver','port'),
-        'password':cf.get('redis-slaver','password'),
-        'db':cf.get('redis-slaver','db'),
-    }
-    DATABASE = {
-        'host': cf.get('db-slaver', 'host'),
-        'port': cf.get('db-slaver', 'port'),
-        'user': cf.get('db-slaver', 'user'),
-        'password': cf.get('db-slaver', 'password'),
-        'db': cf.get('db-slaver', 'db'),
-    }
-    DATABASE_URL = cf.get('db-slaver','url')
-
-PROXY_API = {
-    'url':cf.get('proxyapi','url'),
-    'tid':cf.get('proxyapi','tid'),
-}
-
-PROXY_SERVER = {
-    'url':cf.get('proxyserver','url'),
-}
+from myspider.privatesettings import *

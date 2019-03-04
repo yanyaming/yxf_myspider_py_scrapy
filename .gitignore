@@ -2,9 +2,11 @@
 *.pyc
 __pycache__
 *.log
-*.db
-*.pid
 *.egg
+*.pid
+myspider/*
+!myspider/myspider/*
+!myspider/scrapy.cfg
 
 #webdriver
 webdriver/*
@@ -12,4 +14,4 @@ webdriver/*
 !webdriver/webdriver.zip
 
 #sensitive config
-myspider/settings.cfg
+myspider/myspider/privatesettings.py

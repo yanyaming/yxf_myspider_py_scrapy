@@ -15,7 +15,7 @@ from myspider.items.FangchanItem import *
 
 
 #1
-class fangchan_anjuke_zufang_spider(RedisSpider):
+class fangchan_anjuke_zufang(RedisSpider):
     name = 'fangchan_anjuke_zufang'
     custom_settings = {
         'PROXY_ENABLE': True,
@@ -46,7 +46,7 @@ class fangchan_anjuke_zufang_spider(RedisSpider):
 
 
 #4
-class fangchan_fangtianxia_zufang_spider(RedisSpider):
+class fangchan_fangtianxia_zufang(RedisSpider):
     name = 'fangchan_fangtianxia_zufang'
     custom_settings = {
         'PROXY_ENABLE': True,
@@ -74,7 +74,7 @@ class fangchan_fangtianxia_zufang_spider(RedisSpider):
 
 
 #7
-class fangchan_wubatongcheng_zufang_spider(RedisSpider):
+class fangchan_wubatongcheng_zufang(RedisSpider):
     name = 'fangchan_wubatongcheng_zufang'
     custom_settings = {
         'PROXY_ENABLE': True,

@@ -25,8 +25,6 @@ mongodb
 
 redis  
 
-java-elasticsearch
-
 yxf_myspider_py_scrapy/requirments.txt  
 
 ### 项目架构
@@ -37,15 +35,13 @@ yxf_myspider_py_scrapy/requirments.txt
 
 代理IP服务器-本地：IPProxyPool([http://localhost:8001])  （别人的原项目：[https://github.com/qiyeboy/IPProxyPool]）  
 
-爬虫管理服务器-本地：scrapyd([http://iotec.cc:6800])  
+爬虫工作服务器-本地：scrapyd(scrapy-myspider) ([http://localhost:6800])  
 
-工作服务器-本地：scrapy(myspider)  
-
-数据API服务器-VPS：webserver([http://iotec.cc:8080])  
-
-搜索引擎服务器-VPS：elasticsearch([http://iotec.cc])  
+爬虫管理服务器-VPS&本地：webserver([http://iotec.cc:8080],[http://localhost:8080])  
 
 前端展示服务器-VPS：mysite([http://avata.cc])  
+
+搜索引擎服务器-本地（因性能问题，无法放到远程）：elasticsearch([http://localhost:9200])  
 
 ### 思路
 
@@ -85,16 +81,6 @@ selenium加载webdriver-firefoxdriver时，"connection refused"？
     采用外部下载器的代码用try-except抛出DontCloseSpider异常，然后在异常处理代码中统一重新发出请求。
     但单个爬虫实例请求队列只有一条单线，很容易宕机，可使用scrapyd同时运行多个爬虫实例，多流水线爬取。
 
-## 部署
+## 部署与运行
 
-Master——scrapyd爬虫服务，redis队列，postgresql数据库，web.py网站API服务  
-
-Slaver——从master获取爬虫任务，解析得到结果后上传到master的数据库  
-
-## 运行
-
-Master作为服务在VPS全天候运行，Slaver在本地电脑通过手动运行脚本随时启动停止  
-
-## TODO
-
-此项目未完成，暂时无法使用  
+Master在VPS全天候运行，Slaver在本地电脑通过手动运行脚本随时启动停止  

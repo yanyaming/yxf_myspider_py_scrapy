@@ -4,6 +4,7 @@ import web
 import json
 import redis
 import pymongo
+import requests
 from loadenv import *
 
 
@@ -21,41 +22,12 @@ urls = (
 class index(object):
     def GET(self):
         inputs = web.input()  # query:?type=1&name=admin;storage:{'type': u'1', 'name': u'admin'}
-        page = '''
-        <!DOCTYPE html>
-        <html>
-        <head>
-            <title>Scrapyd</title>
-        </head>
-        <body>
-            <h1>Jobs</h1>
-            <p><a href='..'>Go back</a></p>
-            <table border='1'>
-                <tr>
-                    <th>Project</th>
-                    <th>Spider</th>
-                    <th>Job</th>
-                    <th>PID</th>
-                    <th>Start</th>
-                    <th>Runtime</th>
-                    <th>Finish</th>
-                    <th>Log</th>
-                </tr>
-                <tr>
-                    <th colspan='8' style='background-color: #ddd'>Pending</th>
-                </tr>
-                <tr>
-                    <th colspan='8' style='background-color: #ddd'>Running</th>
-                </tr>
-                <tr>
-                    <th colspan='8' style='background-color: #ddd'>Finished</th>
-                </tr>
-            </table>
-        </body>
-        </html>
-        '''
-        index = web.template.render(page)
-        return index
+        if inputs.get('op',None) == 'scrapyd':
+            page = web.template.Template(requests.get('http://localhost:6800').text)
+            return page()
+        else:
+            page = web.template.frender(os.path.join(WEB_ROOT,'templetes/index.html'))
+            return page()
 
 
 class stats(object):
@@ -114,8 +86,28 @@ class api(object):
     params = {}
 
     def GET(self):
-        inputs = web.input()  # query:?type=1&name=admin;storage:{'type': u'1', 'name': u'admin'}
-        json_result = json.dumps(sqlhelper.select(inputs.get('count', None), inputs))
+        inputs = web.input()
+        r = redis.StrictRedis(host=REDIS['host'], port=int(REDIS['port']), db=int(REDIS['db']),password=REDIS['password'])
+
+        result = {}
+        if inputs.get('op', None) == 'addurl':
+            spidername = inputs.get('spidername',None)
+            url = inputs.get('url',None)
+            if spidername and url:
+                r.lpush(spidername+':start_urls', url)
+                result['status'] = 'ok'
+            else:
+                result['status'] = 'error'
+        elif inputs.get('op', None) == 'flush':
+            spidername = inputs.get('spidername', None)
+            if spidername:
+                r.delete(spidername+':dupefilter')
+                result['status'] = 'ok'
+            else:
+                result['status'] = 'error'
+        else:
+            pass
+        json_result = json.dumps(result, ensure_ascii=False)
         return json_result
 
 
