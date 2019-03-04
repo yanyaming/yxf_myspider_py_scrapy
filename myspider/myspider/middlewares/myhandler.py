@@ -100,7 +100,7 @@ class MyHandlerMiddleware(object):
                         self.browser = myselenium.load_firefox(load_images=False,display=False)
                 self.browser.get(request.url)
                 res = TextResponse(url=self.browser.current_url,body=bytes(self.browser.page_source,encoding='utf-8'))
-                # self.browser.close()
+                self.browser.close()
                 return TextResponse(url=request.url, status=200, headers=response.headers,
                                     body=res.body, request=request)
             except:

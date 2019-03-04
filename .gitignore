@@ -2,7 +2,6 @@
 *.pyc
 __pycache__
 *.log
-*.egg
 *.pid
 myspider/*
 !myspider/myspider/*

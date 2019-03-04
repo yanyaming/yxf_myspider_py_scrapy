@@ -22,12 +22,9 @@ urls = (
 class index(object):
     def GET(self):
         inputs = web.input()  # query:?type=1&name=admin;storage:{'type': u'1', 'name': u'admin'}
-        if inputs.get('op',None) == 'scrapyd':
-            page = web.template.Template(requests.get('http://localhost:6800').text)
-            return page()
-        else:
-            page = web.template.frender(os.path.join(WEB_ROOT,'templetes/index.html'))
-            return page()
+        result = {}
+        json_result = json.dumps(result, ensure_ascii=False)
+        return json_result
 
 
 class stats(object):

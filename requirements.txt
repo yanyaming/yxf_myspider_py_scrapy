@@ -14,3 +14,5 @@ gevent>=1.2.0
 greenlet>=0.4.11
 SQLAlchemy>=1.1.4
 web.py==0.40.dev0
+spiderkeeper
+
