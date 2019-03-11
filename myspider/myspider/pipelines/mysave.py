@@ -13,5 +13,5 @@ class MySavePipeline(object):
         # spider.logger.info('MySavePipeline----------item:' + str(data))
         db = self.client[DATABASE['db']]
         co = db[spider.name]
-        co.insert_one(data)
+        co.save(data)
         return item
