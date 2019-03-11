@@ -49,6 +49,8 @@ class MyHandlerMiddleware(object):
             r.hdel(b'crawler',bytes(spider.name,encoding='utf-8'))
         else:
             r.hset(b'crawler',bytes(spider.name,encoding='utf-8'),count-1)
+        if self.browser:
+            self.browser.close()
 
     # 截获下载中间件抛出的所有异常（请求阶段）。twisted的异常类型：多为传输层TCP的timeout或者refused
     def process_exception(self, request, exception, spider):
@@ -95,12 +97,13 @@ class MyHandlerMiddleware(object):
             try:
                 if not self.browser:
                     if PROXY_ENABLE:
-                        self.browser = myselenium.load_firefox(load_images=False, display=False, proxy=request.meta['proxy'].decode('utf-8'))
+                        if not self.browser:
+                            self.browser = myselenium.load_firefox(load_images=False, display=False, proxy=request.meta['proxy'].decode('utf-8'))
                     else:
-                        self.browser = myselenium.load_firefox(load_images=False,display=False)
+                        if not self.browser:
+                            self.browser = myselenium.load_firefox(load_images=False,display=False)
                 self.browser.get(request.url)
                 res = TextResponse(url=self.browser.current_url,body=bytes(self.browser.page_source,encoding='utf-8'))
-                self.browser.close()
                 return TextResponse(url=request.url, status=200, headers=response.headers,
                                     body=res.body, request=request)
             except:

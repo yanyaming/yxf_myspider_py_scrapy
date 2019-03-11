@@ -29,17 +29,23 @@ yxf_myspider_py_scrapy/requirments.txt
 
 ### 项目架构
 
+主（Master）  
+
 分布式队列存储服务器-VPS：redis([http://iotec.cc:6379])  
 
 非关系数据存储服务器-VPS：mongodb([http://iotec.cc:27017])  
 
-代理IP服务器-本地：IPProxyPool([http://localhost:8001])  （别人的原项目：[https://github.com/qiyeboy/IPProxyPool]）  
+管理API服务器-VPS：webserver([http://iotec.cc:8080])  
+
+前端网站-VPS：mysite([http://avata.cc])  
+
+从（Slave）  
+
+代理IP服务器-本地：IPProxyPool([http://localhost:8001]) （别人的原项目：[https://github.com/qiyeboy/IPProxyPool]）  
 
 爬虫工作服务器-本地：scrapyd(scrapy-myspider) ([http://localhost:6800])  
 
-爬虫管理服务器-VPS&本地：webserver([http://iotec.cc:8080],[http://localhost:8080])  
-
-前端展示服务器-VPS：mysite([http://avata.cc])  
+爬虫管理服务器-本地：spiderkeeper([http://localhost:5000])  
 
 搜索引擎服务器-本地（因性能问题，无法放到远程）：elasticsearch([http://localhost:9200])  
 
@@ -75,6 +81,10 @@ selenium加载webdriver-chromedriver时，找不到可执行文件？
 selenium加载webdriver-firefoxdriver时，"connection refused"？  
 
     首先检查firefox的driver文件是否有足够权限，然后检查firefox浏览器的版本是否足够高，升级版本。  
+
+selenium加载webdriver-firefoxdriver时，"Tried to run command without establishing a connection"？  
+
+    不能在爬取过程中关闭引擎，可设置在爬虫的关闭事件里关闭引擎。  
 
 爬虫中断运行时当前未完成的请求丢失？  
 

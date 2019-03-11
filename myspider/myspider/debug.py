@@ -19,17 +19,12 @@ if __name__ == '__main__':
 
     # r.flushdb()
 
-    # r.delete('fangchan_58_zufang:proxy_http')
-    # r.delete('fangchan_58_zufang:proxy_https')
-    # r.lpush('fangchan_58_zufang:start_urls', 'http://wx.58.com/chuzu/')
-    # execute(['scrapy','crawl','fangchan_58_zufang'])
-    #
-    # r.delete('fangchan_fangtianxia_zufang:proxy_http')
-    # r.delete('fangchan_fangtianxia_zufang:proxy_https')
-    # r.lpush('fangchan_fangtianxia_zufang:start_urls', 'http://wuxi.zu.fang.com/')
-    # execute(['scrapy', 'crawl', 'fangchan_fangtianxia_zufang'])
+    # r.delete('zhaopin_qianchengwuyou:proxy_http')
+    # r.delete('zhaopin_qianchengwuyou:proxy_https')
+    r.lpush('zhaopin_qianchengwuyou:start_urls', 'https://www.51job.com/')
+    execute(['scrapy','crawl','zhaopin_qianchengwuyou'])
     #
     # r.delete('fangchan_anjuke_zufang:proxy_http')
     # r.delete('fangchan_anjuke_zufang:proxy_https')
-    # r.lpush('fangchan_anjuke_zufang:start_urls', 'https://wx.zu.anjuke.com/')
-    execute(['scrapy', 'crawl', 'fangchan_anjuke_zufang'])
+    # r.lpush('fangchan_anjuke_zufang:start_urls', 'https://hz.zu.anjuke.com/')
+    # execute(['scrapy', 'crawl', 'fangchan_anjuke_zufang'])

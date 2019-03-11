@@ -4,7 +4,7 @@
 curpath=$(cd "$(dirname "$0")"; pwd)
 cd $curpath
 #config
-sed -i 's/master = False/master = True/g' myspider/myspider/privatesettings.py
+sed -i 's/MASTER = False/MASTER = True/g' myspider/myspider/privatesettings.py
 
 #web
 cd ./webserver

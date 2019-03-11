@@ -64,20 +64,20 @@ class fangchan_anjuke_zufang_item(scrapy.Item):
     def parse_listpage(self, response, ite):
         #编码
         self['bianma'] = ite.css('.zu-itemmod .zu-info h3 a::attr(href)').extract_first().split('/')[-1]
-        #城市?
-        self['chengshi'] = str(ite.css('.breadcrumbs div a::text').extract_first())[:-3]
+        #城市
+        self['chengshi'] = str(response.css('.breadcrumbs div a::text').extract_first())[:-3]
         #标题
         self['biaoti'] = ite.css('.zu-itemmod .zu-info h3 a::attr(title)').extract_first()
         #图片（链接）
         self['tupian'] = ite.css('.zu-itemmod .thumbnail::attr(src)').extract_first()
         #费用
         self['feiyong'] = str(ite.css('.zu-itemmod .zu-side strong::text').extract_first())+str(ite.css('.zu-side p::text').extract_first())
-        #地址?
-        self['dizhi'] = str(response.css('.zu-itemmod .zu-info address::text').extract_first()).strip()
+        #地址
+        self['dizhi'] = response.css('.zu-itemmod .zu-info').xpath('./address/text()[2]').extract_first().strip()
         #小区
         self['xiaoqu'] = response.css('.zu-itemmod .zu-info address a::text').extract_first()
         #户型
-        self['huxing'] = response.css('.zu-itemmod .zu-info').xpath('./p[1]/text()[1]').extract_first().split(' ')[-1]
+        self['huxing'] = response.css('.zu-itemmod .zu-info').xpath('./p[1]/text()[1]').extract_first().strip()
         #面积
         self['mianji'] = response.css('.zu-itemmod .zu-info').xpath('./p[1]/text()[2]').extract_first()
         #楼层

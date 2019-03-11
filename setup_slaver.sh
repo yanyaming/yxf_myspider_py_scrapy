@@ -4,7 +4,7 @@ echo "----------pip install--------------"
 pip3 install -r requirements.txt
 echo "----------unzip webdriver----------"
 cd ./webdriver
-unzip webdriver.zip
+unzip -n webdriver.zip
 chmod 777 *
 echo "----------deploy scrapyd-----------"
 cd ..
@@ -12,7 +12,8 @@ cd ..
 ./start_server_slaver.sh
 sleep 3
 cd ./myspider
-/usr/local/python3/bin/scrapyd-deploy myspider -p myspider
+#/usr/local/python3/bin/scrapyd-deploy myspider -p myspider
+/usr/local/python3/bin/scrapyd-deploy --build-egg output.egg
 cd ..
 ./stop_server.sh
 echo "----------done---------------------"

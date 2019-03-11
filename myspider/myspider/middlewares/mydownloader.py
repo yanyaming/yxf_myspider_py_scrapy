@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import time
+from scrapy import signals
 from scrapy.exceptions import DontCloseSpider
 from scrapy.http import HtmlResponse,Response,Request,TextResponse
 from myspider.downloaders import myselenium,myrequests
@@ -9,6 +10,22 @@ from myspider.downloaders import myselenium,myrequests
 class MyDownloaderMiddleware(object):
     browser = None
     session = None
+
+    @classmethod
+    def from_crawler(cls, crawler):
+        s = cls()
+        crawler.signals.connect(s.spider_opened, signal=signals.spider_opened)
+        crawler.signals.connect(s.spider_closed, signal=signals.spider_closed)
+        return s
+
+    # 爬虫启动操作
+    def spider_opened(self, spider):
+        pass
+
+    # 爬虫关闭操作
+    def spider_closed(self,spider):
+        if self.browser:
+            self.browser.close()
 
     def process_request(self, request, spider):
         CUSTOM_DOWNLOADER = spider.settings.get('CUSTOM_DOWNLOADER', 'default')
@@ -39,12 +56,13 @@ class MyDownloaderMiddleware(object):
         elif CUSTOM_DOWNLOADER == 'selenium':
             try:
                 if 'proxy' in request.meta:
-                    self.browser = myselenium.load_firefox(load_images=False,display=False, proxy=request.meta['proxy'].decode('utf-8'))
+                    if not self.browser:
+                        self.browser = myselenium.load_firefox(load_images=False,display=False, proxy=request.meta['proxy'].decode('utf-8'))
                 else:
-                    self.browser = myselenium.load_firefox(load_images=False, display=False)
+                    if not self.browser:
+                        self.browser = myselenium.load_firefox(load_images=False, display=False)
                 self.browser.get(request.url)
                 res = TextResponse(url=self.browser.current_url, body=self.browser.page_source)  # page_source是纯文本形式
-                self.browser.close()
                 return TextResponse(url=request.url,status=200,headers=request.headers,
                                     body=res.body,request=request)
             except:
