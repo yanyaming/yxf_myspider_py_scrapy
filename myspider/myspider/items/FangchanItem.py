@@ -11,8 +11,8 @@ import scrapy
 #1
 class fangchan_anjuke_zufang_item(scrapy.Item):
     # listpage
-    # 编码
-    bianma = scrapy.Field()
+    # id
+    _id = scrapy.Field()
     # 城市
     chengshi = scrapy.Field()
     # 标题
@@ -62,8 +62,8 @@ class fangchan_anjuke_zufang_item(scrapy.Item):
     crawl_time = scrapy.Field()
 
     def parse_listpage(self, response, ite):
-        #编码
-        self['bianma'] = ite.css('.zu-itemmod .zu-info h3 a::attr(href)').extract_first().split('/')[-1]
+        #id
+        self['_id'] = ite.css('.zu-itemmod .zu-info h3 a::attr(href)').extract_first().split('/')[-1]
         #城市
         self['chengshi'] = str(response.css('.breadcrumbs div a::text').extract_first())[:-3]
         #标题
