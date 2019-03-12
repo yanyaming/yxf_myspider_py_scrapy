@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 import pymongo
+from scrapy.exceptions import DropItem
 from myspider.settings import DATABASE,DATABASE_URL
 
 
@@ -14,4 +15,4 @@ class MySavePipeline(object):
         db = self.client[DATABASE['db']]
         co = db[spider.name]
         co.save(data)
-        return item
+        raise DropItem
