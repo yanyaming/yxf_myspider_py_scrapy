@@ -53,19 +53,18 @@ yxf_myspider_py_scrapy/requirments.txt
 
 爬取逻辑：
 
-	爬取网页由谁来执行？slaver-myspider和slaver-ipproxypool。
+	爬取网页由谁来执行？slave-myspider和slave-ipproxypool。
 	重点考虑spidermiddleware和downloadermiddleware，从发起请求到收到正确网页并解析得到正确Item的过程。
 	请求网页与解析中的异常处理，包括超时、错误url、反爬、验证码、解析失败等。
 	尽量模仿正常访问，动态UA、代理IP、Cookies、正确的Header头部、登录账号甚至账号轮换等。
 
 调度与存储逻辑：
 
-	队列由谁来管理？master-redis和master-scrapyd。
-	数据由谁来存储？master-postgresql。
-	重点考虑item和pipeline，在item文件里定义解析规则，与数据库表中的数据对应起来，在pipeline里写存储流程。
-	调度管理应当有多爬虫管理、随时启停、断点续爬、增量爬取、更新爬取功能。
-	最初加入1个初始url，从爬到的网页中得到新url加入队列，全部爬完自动停止。
-	先在本地缓存SQL语句（比如10个），超出后再提交到master存入数据库。
+	队列由谁来管理？master-redis。
+	数据由谁来存储？master-mongodb。
+	爬虫由谁来控制？slave-scrapyd+slave-spiderkeeper。调度管理应当有多爬虫管理、随时启停、断点续爬、增量爬取、更新爬取功能。
+	重点考虑item和pipeline，在item文件里定义解析规则，与数据库中的数据对应起来，在pipeline里写存储流程。
+	最初加入几个初始url，从爬到的网页中得到新url加入队列，全部爬完自动停止。
 
 查询与展示逻辑：
 
@@ -91,6 +90,10 @@ selenium加载webdriver-firefoxdriver时，"Tried to run command without establi
     采用外部下载器的代码用try-except抛出DontCloseSpider异常，然后在异常处理代码中统一重新发出请求。
     但单个爬虫实例请求队列只有一条单线，很容易宕机，可使用scrapyd同时运行多个爬虫实例，多流水线爬取。
 
+爬虫爬取完成一个列表页的所有项目后，队列变空，无法再爬下一个列表页？
+
+    ?
+
 ## 部署与运行
 
-Master在VPS全天候运行，Slaver在本地电脑通过手动运行脚本随时启动停止  
+Master在VPS全天候运行，Slave在本地电脑通过手动运行脚本随时启动停止  
