@@ -3,6 +3,7 @@
 __pycache__
 *.log
 *.pid
+*.egg
 myspider/*
 !myspider/myspider/*
 !myspider/scrapy.cfg
