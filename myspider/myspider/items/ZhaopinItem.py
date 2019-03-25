@@ -39,8 +39,8 @@ class zhaopin_item(scrapy.Item):
     def parse_detailpage_qianchengwuyou(self, response):
         self['_id'] = str(response.url.split('?')[0].split('/')[-1].split('.')[0])
         self['pingtai'] = '前程无忧 51job'
-        self['chengshi'] = response.css('.tHeader .msg::attr(title)').extract_first().split('-')[0]
-        self['yaoqiu'] = response.css('.tHeader .msg::attr(title)').extract_first().split('  |  ')
+        self['chengshi'] = response.css('.tHeader .msg::attr(title)').extract_first().split('&nbsp;&nbsp;|&nbsp;&nbsp;')[0].split('-')[0]
+        self['yaoqiu'] = response.css('.tHeader .msg::attr(title)').extract_first().split('&nbsp;&nbsp;|&nbsp;&nbsp;')
         self['shangbandizhi'] = response.css('.tCompany_main').xpath('./div[@class="tBorderTop_box"][2]/div/p/text()[2]').extract_first()
         self['zhiweimingcheng'] = response.css('.tHeader .cn h1::attr(title)').extract_first()
         self['zhiweibiaoqian'] = response.css('.tHeader .jtag .sp4::text').extract()
