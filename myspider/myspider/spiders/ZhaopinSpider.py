@@ -4,7 +4,7 @@ import scrapy
 import datetime
 from scrapy import Request
 from scrapy_redis.spiders import RedisSpider
-from myspider.items.FangchanItem import *
+from myspider.items.ZhaopinItem import *
 
 
 #1
@@ -19,20 +19,26 @@ class zhaopin_qianchengwuyou(scrapy.Spider):
     }
 
     def parse(self, response):
-        list_content = response.css('.list-content .zu-itemmod')
-        url_nextpage = response.css('.aNxt::attr(href)').extract_first()
-        # 发出爬取下一页列表请求
-        yield Request(url=url_nextpage, callback=self.parse)
+        self.parselist(response)
+        try:
+            url_nextpage = response.css('#resultList .dw_page ul').xpath('./li[last()]').extract_first()
+            # 发出爬取下一页列表请求
+            yield Request(url=url_nextpage, callback=self.parse)
+        except:
+            return None
+
+    def parselist(self, response):
+        list_content = response.css('#resultList .el')
         for ite in list_content:
-            item = fangchan_anjuke_zufang_item()
+            item = zhaopin_item()
             item.parse_listpage(response, ite)
-            url_detailpage=response.css('.zu-itemmod::attr(link)').extract_first()
+            url_detailpage=ite.css('p span a::attr(href)').extract_first()
             # 发出爬取项目详情页请求
             yield Request(url=url_detailpage, callback=self.parsedetail, meta={'data': item})
 
     def parsedetail(self, response):
         item = response.meta['data']  #把之前的未完成爬取结果传递过来继续补充完整
-        item.parse_detailpage(response)
+        item.parse_detailpage_qianchengwuyou(response)
         item['crawl_time'] = datetime.datetime.today().strftime('%Y-%m-%d')
         yield item
 

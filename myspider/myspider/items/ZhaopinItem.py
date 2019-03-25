@@ -42,4 +42,21 @@ class zhaopin_item(scrapy.Item):
     gongsixinxi = scrapy.Field()
 
     def parse_detailpage_qianchengwuyou(self, response):
-        self['zhuangxiuchengdu'] = response.css('.house-info-zufang').xpath('./li[6]/span[2]/text()').extract_first()
+        self['_id'] = str(response.url.split('?')[0].split('/')[-1].split('.')[0])
+        self['pingtai'] = '前程无忧 51job'
+        self['chengshi'] = response.css('.tHeader .msg::attr(title)').extract_first().split('-')[0]
+        self['diqu'] = response.css('.tHeader .msg').xpath('./p[1]/text()').extract_first().strip()
+        self['jingyanyaoqiu'] = response.css('.tHeader .msg').xpath('./p[2]/text()').extract_first().strip()
+        self['xueliyaoqiu'] = response.css('.tHeader .msg').xpath('./p[3]/text()').extract_first().strip()
+        self['zhaopinrenshu'] = response.css('.tHeader .msg').xpath('./p[4]/text()').extract_first().strip()
+        self['faburiqi'] = response.css('.tHeader .msg').xpath('./p[5]/text()').extract_first().strip()
+        self['shangbandizhi'] = response.css('.tCompany_main').xpath('./div[@class="tBorderTop_box"][2]/div/p/text()').extract_first()
+        self['zhiweimingcheng'] = response.css('.tHeader .cn h1::attr(title)').extract_first()
+        self['zhiweibiaoqian'] = response.css('.tHeader .jtag .sp4::text').extract()
+        self['zhiweixinxi'] = str(response.css('.tCompany_main').xpath('./div[@class="tBorderTop_box"][1]/div/p').extract())
+        self['zhiweigongzi'] = response.css('.tHeader .cn strong::text').extract_first()
+        self['gongsimingcheng'] = response.css('.tHeader .cname a::attr(title)').extract_first()
+        self['gongsileixing'] = response.css('.tCompany_sidebar .com_tag:nth-child(1)::attr(title)').extract_first()
+        self['gongsirenshu'] = response.css('.tCompany_sidebar .com_tag:nth-child(2)::attr(title)').extract_first()
+        self['gongsihangye'] = response.css('.tCompany_sidebar .com_tag:nth-child(3)::attr(title)').extract_first()
+        self['gongsixinxi'] = response.css('.tCompany_main').xpath('./div[@class="tBorderTop_box"][3]/div/text()').extract_first()
