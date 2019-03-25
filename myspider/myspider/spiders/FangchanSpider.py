@@ -22,15 +22,6 @@ class fangchan_anjuke_zufang(RedisSpider):
     }
 
     def parse(self, response):
-        self.parselist(response)
-        try:
-            url_nextpage = response.css('.aNxt::attr(href)').extract_first()
-            # 发出爬取下一页列表请求
-            yield Request(url=url_nextpage, callback=self.parse)
-        except:
-            return None
-
-    def parselist(self, response):
         list_content = response.css('.list-content .zu-itemmod')
         for ite in list_content:
             item = fangchan_anjuke_zufang_item()
@@ -38,8 +29,13 @@ class fangchan_anjuke_zufang(RedisSpider):
             url_detailpage = response.css('.zu-itemmod::attr(link)').extract_first()
             # 发出爬取项目详情页请求
             yield Request(url=url_detailpage, callback=self.parsedetail, meta={'data': item})
+        try:
+            url_nextpage = response.css('.aNxt::attr(href)').extract_first()
+            # 发出爬取下一页列表请求
+            yield Request(url=url_nextpage, callback=self.parse)
+        except:
+            return None
 
-    # callback回调链可在一个爬虫里递进深入爬取
     def parsedetail(self, response):
         item = response.meta['data']  # 把之前的未完成爬取结果传递过来继续补充完整
         item.parse_detailpage(response)
