@@ -92,7 +92,8 @@ selenium加载webdriver-firefoxdriver时，"Tried to run command without establi
 
 爬虫爬取完成一个列表页的所有项目后，队列变空，无法再爬下一个列表页？
 
-    ?
+    同样的代码结构，招聘爬虫可正常运行，爬虫暂停后可正常保存请求。
+    而房产爬虫就不行，代码本身没问题，是房产爬虫大量用到selenium，不兼容，需要继续研究。
 
 ## 部署与运行
 
