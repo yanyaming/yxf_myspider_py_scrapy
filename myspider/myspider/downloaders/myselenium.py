@@ -40,6 +40,7 @@ def load_firefox(load_images=True, display=True, proxy=''):
         executable_path=os.path.join(BASE_DIR, 'webdriver/geckodriver'),
         firefox_profile=firefox_profile,
         firefox_options=firefox_options,
+        timeout=10,
     )
     return browser
 

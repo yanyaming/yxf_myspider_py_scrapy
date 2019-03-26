@@ -21,7 +21,7 @@ if __name__ == '__main__':
     # for i in keywords:
     #     r.lpush('zhaopin_qianchengwuyou:start_urls',
     #             'https://search.51job.com/list/080200,000000,0000,00,9,99,{0},2,1.html'.format(i))
-    execute(['scrapy','crawl','zhaopin_qianchengwuyou'])
+    # execute(['scrapy','crawl','zhaopin_qianchengwuyou'])
 
     # r.delete('zhaopin_lagouwang:dupefilter')
     # for i in keywords:

@@ -53,3 +53,21 @@ class zhaopin_item(scrapy.Item):
         self['gongsirenshu'] = response.css('.tCompany_sidebar .com_tag').xpath('./p[2]/@title').extract_first()
         self['gongsihangye'] = response.css('.tCompany_sidebar .com_tag').xpath('./p[3]/@title').extract_first()
         self['gongsixinxi'] = response.css('.tCompany_main').xpath('./div[@class="tBorderTop_box"][3]/div/text()').extract_first()
+
+    def parse_detailpage_lagouwang(self, response):
+        self['_id'] = 'lgw-'+str(response.url.split('?')[0].split('/')[-1].split('.')[0])
+        self['pingtai'] = '拉勾网 lagou'
+        self['chengshi'] = response.css('.tHeader .msg::attr(title)').extract_first().split('|')[0].strip().split('-')[0]
+        self['yaoqiu'] = response.css('.tHeader .msg::attr(title)').extract_first().split('|')
+        for i,ite in enumerate(self['yaoqiu']):
+            self['yaoqiu'][i] = ite.strip()
+        self['shangbandizhi'] = response.css('.tCompany_main').xpath('./div[@class="tBorderTop_box"][2]/div/p/text()[2]').extract_first()
+        self['zhiweimingcheng'] = response.css('.tHeader .cn h1::attr(title)').extract_first()
+        self['zhiweibiaoqian'] = response.css('.tHeader .jtag .sp4::text').extract()
+        self['zhiweixinxi'] = str(response.css('.tCompany_main').xpath('./div[@class="tBorderTop_box"][1]/div/p').extract())
+        self['zhiweigongzi'] = response.css('.tHeader .cn strong::text').extract_first()
+        self['gongsimingcheng'] = response.css('.tHeader .cname a::attr(title)').extract_first()
+        self['gongsileixing'] = response.css('.tCompany_sidebar .com_tag').xpath('./p[1]/@title').extract_first()
+        self['gongsirenshu'] = response.css('.tCompany_sidebar .com_tag').xpath('./p[2]/@title').extract_first()
+        self['gongsihangye'] = response.css('.tCompany_sidebar .com_tag').xpath('./p[3]/@title').extract_first()
+        self['gongsixinxi'] = response.css('.tCompany_main').xpath('./div[@class="tBorderTop_box"][3]/div/text()').extract_first()

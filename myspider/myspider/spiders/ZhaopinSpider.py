@@ -3,6 +3,7 @@
 import scrapy
 import datetime
 from scrapy import Request
+from redis import Redis
 from scrapy_redis.spiders import RedisSpider
 from myspider.items.ZhaopinItem import *
 

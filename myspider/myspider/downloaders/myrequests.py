@@ -35,7 +35,7 @@ def my_requests_request(method, url, **kwargs):
     :return: :class:`Response <Response>` object
     :rtype: requests.Response
     """
-    return requests.request(method=method, url=url, **kwargs)
+    return requests.request(method=method, url=url, timeout=10, **kwargs)
 
 
 class MyRequestsSession(requests.Session):

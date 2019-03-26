@@ -4,7 +4,6 @@ import web
 import json
 import redis
 import pymongo
-import requests
 from loadenv import *
 
 
@@ -16,6 +15,7 @@ urls = (
     '/', 'index',
     '/stats', 'stats',
     '/api', 'api',
+    '/query', 'query',
 )
 
 
@@ -80,8 +80,6 @@ class stats(object):
 
 
 class api(object):
-    params = {}
-
     def GET(self):
         inputs = web.input()
         r = redis.StrictRedis(host=REDIS['host'], port=int(REDIS['port']), db=int(REDIS['db']),password=REDIS['password'])
@@ -106,6 +104,15 @@ class api(object):
             pass
         json_result = json.dumps(result, ensure_ascii=False)
         return json_result
+
+
+class query(object):
+    def POST(self):
+        inputs = web.input()
+        m_client = pymongo.MongoClient(DATABASE_URL)
+        m_db = m_client[DATABASE['db']]
+
+        result = {}
 
 
 if __name__ == '__main__':

@@ -2,7 +2,8 @@
 # -*- coding: utf-8 -*-
 import datetime
 from scrapy import Request
-from scrapy_redis.spiders import RedisSpider
+from redis import Redis
+from scrapy_redis.spiders import RedisSpider,RedisCrawlSpider
 from myspider.items.FangchanItem import *
 
 '''
@@ -13,6 +14,7 @@ from myspider.items.FangchanItem import *
 #1
 class fangchan_anjuke_zufang(RedisSpider):
     name = 'fangchan_anjuke_zufang'
+    redis_key = 'fangchan_anjuke_zufang:start_urls'
     custom_settings = {
         'PROXY_ENABLE': True,
         'PROXY_MAX_USE': 10,
